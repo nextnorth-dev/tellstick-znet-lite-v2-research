@@ -1,11 +1,12 @@
 # LocalOwner deployment findings
 
-The LocalOwner prototype was exercised on one modified TellStick ZNet Lite V2
+Related, extended LocalOwner code was exercised on one modified TellStick ZNet Lite V2
 running firmware 1.3.2. The tested paths included HTTPS login, local approval
 of a stock API token, JWT issuance, selected API reads, dashboard access, and
 specific radio operations. A separate signed MQTT plugin also persisted across
 daemon restarts. The [physical verification matrix](../HARDWARE_VERIFICATION.md)
-records each result and its evidence type.
+records each result and its evidence type. The [published snapshot](../prototype/README.md)
+is not established as byte-identical to that deployed implementation.
 
 The token compatibility path runs in the stock application process because
 `ApiManager` keeps pending requests in memory; a separate CherryPy process
@@ -22,7 +23,9 @@ authenticated uploads or safe deployment on other devices.
 - The inspected flash map has no verified redundant firmware slot. Controller
   nonvolatile state may be separate from `Telldus.conf`.
 - Untouched-stock installation, other firmware versions, broader TLS and
-  firewall behavior, and physical Z-Wave exclusion remain unverified.
+  firewall behavior, and independent post-removal controller membership remain
+  unverified. Later Live captures record exclusion and application removal;
+  see [later runtime results](later-runtime-results.md).
 
 See [update and recovery paths](update-and-recovery.md) for the static update
 analysis and recovery limits.

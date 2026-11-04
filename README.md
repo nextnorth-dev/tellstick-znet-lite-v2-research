@@ -41,6 +41,10 @@ private keys, or device-specific configuration.
 - A production-daemon sensor callback was tested with simulated input. No RF
   signal was emitted; physical sensor-origin events and sensor-to-MQTT delivery
   remain unverified.
+- A modified R1-derived runtime completed Telldus Live registration and a fresh
+  OpenID callback on November 3. Later RF433/Z-Wave Live captures and separate
+  R1/rc5 image validation are described in [later results](docs/later-runtime-results.md).
+  RC5 was not flashed or boot-tested in the retained release records.
 - One cold boot with scoped IPv4 egress blocks passed selected local checks.
   This does not prove universal or long-duration absence of outbound traffic.
 
@@ -67,7 +71,8 @@ behavior.
 - [Interfaces](docs/interfaces.md) and [authentication](docs/authentication.md)
 - [RF433](docs/rf433.md) and [Z-Wave local paths](docs/zwave-local.md)
 - [Local access and network isolation](docs/no-cloud.md)
-- [Testing](docs/testing.md) and [references](docs/references.md)
+- [Testing](docs/testing.md), [later runtime results](docs/later-runtime-results.md),
+  and [references](docs/references.md)
 - [Security policy](SECURITY.md)
 
 ## Scope and safety

@@ -46,7 +46,10 @@ matrix](../HARDWARE_VERIFICATION.md) and [evidence register](evidence-status.md)
 
 - Universal or long-duration absence of outbound traffic, IPv6 isolation, and
   repeatability across boots or devices.
-- A complete stock Telldus Live account login and callback sequence.
+- Untouched-stock Telldus Live end-to-end login. A modified R1-derived runtime
+  completed registration and a fresh callback on November 3; that cloud-enabled
+  run is separate from the LocalOwner isolation tests. See
+  [registration evidence](later-runtime-results.md#telldus-live-registration-and-openid-november-3).
 - RF433 sensor-origin events, generic pairing across device models, and
   receiver-origin state feedback.
 - Sensor-to-MQTT forwarding. A `sensorValueUpdated` callback was exercised in
@@ -55,6 +58,9 @@ matrix](../HARDWARE_VERIFICATION.md) and [evidence register](evidence-status.md)
 - Home Assistant's stock-API state polling is implemented, but sustained
   polling behavior, callback forwarding, and complete bidirectional
   synchronization have not been fully verified.
-- General Z-Wave command delivery, exclusion, association management,
+- General Z-Wave command delivery, independently verified post-exclusion
+  controller membership, association management,
   controller-NVM backup/recovery, and radio behavior under egress isolation.
+  Later Live captures record exclusion and removal callbacks, separately from
+  LocalOwner and cloud-isolation tests; see [later results](later-runtime-results.md).
 - Recovery from failure of the experimental overlay.

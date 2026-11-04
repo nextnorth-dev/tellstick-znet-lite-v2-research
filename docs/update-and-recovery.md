@@ -1,6 +1,6 @@
 # Firmware update and recovery paths in 1.3.2
 
-This analysis uses the official ZNet Lite V2 1.3.2 image identified in [references](references.md). The paths below are from the extracted image; they have not been exercised on a gateway. The [offline verifier test](../tests/test_stock_upgrade_verification.py) runs the original Python verifier with synthetic data and a substituted GPG subprocess. It does not test an actual vendor signature or write flash.
+This analysis uses the official ZNet Lite V2 1.3.2 image identified in [references](references.md). The vendor-managed signature path below is from the extracted image; later manual image-validation and installation experiments are described separately in [later results](later-runtime-results.md#firmware-artifacts-installation-and-recovery). The [offline verifier test](../tests/test_stock_upgrade_verification.py) runs the original Python verifier with synthetic data and a substituted GPG subprocess. It does not test an actual vendor signature or write flash.
 
 ## Vendor update path
 
@@ -10,7 +10,7 @@ For this board, `board.Board.doUpgradeImage()` delegates firmware installation t
 
 The `firmware` MTD region overlaps `kernel` and `rootfs`; the documented flash map has one firmware region rather than a verified redundant A/B slot. `lib/upgrade/common.sh:default_do_upgrade()` writes an image to the selected MTD partition and optionally embeds a configuration archive. An interrupted write can therefore require an independent recovery path. The observed U-Boot command list includes an HTTP recovery command, but accepted images, validation, access procedure, and the ability to restore the current unit have **not** been tested. Neither a bootloader command nor a private flash dump alone proves recoverability.
 
-The inspected `/sbin/sysupgrade` accepts a local image path, so the Linux-side code has a cloud-independent input route for an official image when an authorized root shell and a working system are available. Its board checks and write path are only statically traced here. A local-image route is not a proven recovery method for a device that no longer boots, and no full reflash should be attempted without a separately tested serial/bootloader path and verified device-specific backups.
+The inspected `/sbin/sysupgrade` accepts a local image path, so the Linux-side code has a cloud-independent input route for an official image when an authorized root shell and a working system are available. The original study statically traced its board checks and write path. Later R1/rc5 candidates passed native checks, and a later owner rc4 installation was verified by a ROM match. Those are separate from vendor-signature validation. A local-image route is not a proven recovery method for a device that no longer boots, and no full reflash should be attempted without a separately tested serial/bootloader path and verified device-specific backups.
 
 ## Overlay persistence and ordinary upgrades
 
@@ -28,4 +28,4 @@ The V2 runs on a MIPS 24Kc/AR933x board with 16 MB SPI flash, 64 MB RAM, and two
 4. Review TLS certificate trust, firewall scope, and all existing HTTP paths. A local owner password must never be sent over unprotected stock HTTP.
 5. Stage a version-specific, removable overlay only after those checks. Verify stock startup/API and known nodes after a rehearsed rollback. Review persistence again before every vendor upgrade.
 
-**Decision:** an in-process signed plugin is a physically demonstrated route for limited behavior such as the one-shot MQTT test. Experimental LocalOwner paths are also physically demonstrated on one modified gateway, but its rollback, upgrade behavior, and broader deployment requirements remain open. Full firmware replacement remains **NO-GO** without a tested independent restore path; the located flash backup alone does not prove recoverability.
+**Recovery limit:** the earlier study withheld approval for full firmware replacement without a tested independent restore path. Later owner installation experiments establish normal rc4 installation/boot, not failed-boot recovery or full-flash restoration. R1 and rc5 native acceptance alone does not establish either boot or recovery. LocalOwner and signed-plugin runtime results remain distinct from those firmware experiments; the located flash backup alone does not prove recoverability.
