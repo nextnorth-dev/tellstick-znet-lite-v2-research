@@ -5,9 +5,10 @@
 ## Overview
 
 Firmware 1.3.2 includes a Python remote-support component and an RSA private
-key in its filesystem. Reverse SSH forwarding was reproduced against a
-researcher-controlled endpoint. This does not demonstrate an authentication
-bypass of the gateway's local SSH service.
+key in its filesystem. Its code implements outbound SSH reverse forwarding.
+An earlier narrative reports reproduction against a researcher-controlled
+endpoint, but a sufficient primary transcript was not located. That runtime
+claim remains unresolved; no local SSH authentication bypass is established.
 
 ## Research Environment
 
@@ -22,7 +23,7 @@ bypass of the gateway's local SSH service.
 | Authentication material | RSA private key in PEM format |
 | Transport | SSH |
 | Remote access mechanism | Reverse TCP port forwarding |
-| Verification endpoint | Researcher-controlled SSH server |
+| Reported controlled-test endpoint | Researcher-controlled SSH server; primary transcript not located |
 
 The investigation was performed on personally owned hardware and a locally extracted firmware filesystem.
 
@@ -121,7 +122,7 @@ flowchart TD
     remote -->|Forwarded TCP connection| local["TellStick local SSH service: separate SSH authentication"]
 ```
 
-The diagram represents the observed mechanism, not a complete specification of the manufacturer’s production support infrastructure.
+The diagram represents the source-derived mechanism, not a complete specification of the manufacturer’s production support infrastructure.
 
 ## How Reverse SSH Forwarding Works
 
@@ -171,33 +172,26 @@ The private key used to establish the outbound support tunnel does not automatic
 
 These authentication boundaries are important when assessing the security impact of the embedded key.
 
-## Controlled Verification
+## Controlled verification: evidence gap
 
-The remote-support behavior was examined using a researcher-controlled SSH endpoint.
+An earlier account describes a researcher-controlled reverse-forwarding
+experiment. Its primary connection/forwarding transcript was not located,
+while the static security review explicitly leaves a live support tunnel
+unverified. The narrative alone is insufficient to classify reproduction as
+runtime verified. It is retained as an unresolved historical report, not
+proof that the installed RemoteSupport package completed a tunnel.
 
-The experiment reproduced the relevant outbound SSH and reverse-forwarding behavior without relying on access to the manufacturer’s production support infrastructure.
+Filesystem and code evidence establish the package, embedded private-key
+file, startup registration, outbound SSH role, and forwarding target. Owner
+root SSH was verified independently; the November 3 record identifies fresh
+public-key authentication, without use of the vendor support key. Later
+modified-runtime checks found support imports blocked, no registered support
+handler, and no vendor private key; they did not establish a tunnel.
 
-### Verified observations
-
-- The installed filesystem contains the remote-support Python package.
-- The package includes an RSA private-key file.
-- The application startup configuration references the remote-support component.
-- The investigated mechanism uses outbound SSH.
-- Reverse TCP forwarding behavior was reproduced against a controlled endpoint.
-- The forwarded connection remained subject to the destination SSH service’s authentication requirements.
-
-### What the experiment did not establish
-
-The experiment did not demonstrate:
-
-- Unauthorized access to a Telldus-operated SSH server.
-- Access to another customer’s gateway.
-- An authentication bypass of the gateway’s local SSH service.
-- That every manufactured unit uses identical key material.
-- That the remote-support endpoint is publicly reachable.
-- That possession of the embedded key is sufficient to activate remote support on arbitrary devices.
-
-These distinctions are necessary to avoid overstating the findings.
+No access to manufacturer support infrastructure, other customers' gateways,
+local authentication bypass, universal key reuse, or arbitrary-device support
+activation is established. No operational endpoint or authentication material
+is published.
 
 ## Security Considerations
 
@@ -244,7 +238,7 @@ However, it also creates an access path whose security depends on authentication
 
 The gateway’s SSH service remains a separate security boundary.
 
-The observed forwarding mechanism should not be described as a root-login bypass.
+The source-derived forwarding mechanism should not be described as a root-login bypass.
 
 ## Recommended Security Design
 
@@ -311,8 +305,8 @@ Sanitized evidence should preserve the original technical meaning without exposi
 | Embedded RSA private-key file exists | Filesystem listing and file identification | Confirmed |
 | Private key is stored in firmware filesystem | Extracted filesystem inspection | Confirmed |
 | Outbound SSH support mechanism | Implementation investigation | Investigated |
-| Reverse TCP forwarding | Controlled SSH experiment | Reproduced |
-| Separate local SSH authentication | Controlled test and protocol behavior | Confirmed for tested configuration |
+| Reverse TCP forwarding | Source path; earlier controlled-test narrative lacks a retained primary transcript | STATIC CODE VERIFIED; runtime reproduction unresolved |
+| Separate local SSH authentication | Firmware authentication boundaries and independently recorded owner login | Owner SSH RUNTIME VERIFIED; support-forwarded login unresolved |
 | Key reuse across all devices | Not established | Unknown |
 | Access to production support infrastructure | Not tested | Not claimed |
 | Authentication bypass | Not demonstrated | Not established |

@@ -382,7 +382,7 @@ The package includes an embedded RSA private-key file at:
 
 The associated support mechanism uses an outbound SSH connection and reverse TCP port forwarding.
 
-Controlled testing against a researcher-operated SSH endpoint reproduced the relevant forwarding behavior.
+An earlier narrative reports controlled forwarding reproduction, but a sufficient primary transcript was not located. The code path is established; runtime reproduction remains unresolved. See the [evidence gap](remote-support.md#controlled-verification-evidence-gap).
 
 The key is associated with authentication of the outbound connection.
 

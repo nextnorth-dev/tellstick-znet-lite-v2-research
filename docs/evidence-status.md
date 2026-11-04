@@ -45,11 +45,25 @@ A hash match identifies an artifact; it is not a signature, provenance proof, or
 
 | Claim | Status | Basis and limit |
 | --- | --- | --- |
-| LocalOwner HTTPS login, local token approval, stock JWT/API reads, dashboard, remember-me/logout | **RUNTIME VERIFIED** | One dedicated, modified gateway. Not stock state. |
+| LocalOwner HTTPS login, local token approval, stock JWT/API reads, dashboard, remember-me/logout | **RUNTIME VERIFIED** | Related extended code on one dedicated modified gateway; byte-identical deployment of the public prototype snapshot is not established. |
 | Cloud isolation | Transport disable and one dual-interface IPv4 egress-block cold boot **RUNTIME VERIFIED**; config-upload suppression **STATIC CODE VERIFIED** | No long-duration or universal zero-vendor-traffic proof. Radio response under isolation is **NOT YET VERIFIED**. |
-| Z-Wave inclusion, `nodeAdded`, physical-button callback, dashboard ON/OFF of one plug | Inclusion, callback, and recorded state **RUNTIME VERIFIED**; dashboard-command physical load change **OWNER-REPORTED PHYSICAL OBSERVATION** | Telldus-branded plug pair only. Physical exclusion **NOT YET VERIFIED**. |
-| RF433 WMR-252 control; generic record CRUD (disposable Arctech record, no RF sent) | Adapter acceptance and generic record operations **RUNTIME VERIFIED**; physical pairing indication and load On/Off **OWNER-REPORTED PHYSICAL OBSERVATION** | Other models, receiver-origin feedback and sensor-origin RF **NOT YET VERIFIED**. |
-| Signed MQTT test plugin | **RUNTIME VERIFIED** on one dedicated gateway | A controlled plugin import was followed by an authenticated subscriber receiving a test publication. Later daemon-start publish calls and the cold-boot case do not have a corresponding subscriber receipt. The one-shot plugin and private broker details are not included. |
+| Z-Wave inclusion, `nodeAdded`, physical-button callback, dashboard ON/OFF of one plug | Inclusion, callback, and recorded state **RUNTIME VERIFIED**; dashboard-command physical load change **OWNER-REPORTED PHYSICAL OBSERVATION** | Earlier LocalOwner plug test only. Later Live captures record exclusion/application removal; final controller membership remains unverified. See [later Z-Wave results](later-runtime-results.md#later-z-wave-captures-november-2). |
+| RF433 WMR-252 control; generic record CRUD (disposable Arctech record, no RF sent) | Adapter acceptance and generic record operations **RUNTIME VERIFIED**; physical pairing indication and load On/Off **OWNER-REPORTED PHYSICAL OBSERVATION** | Later Nexa Live control is recorded separately; general model coverage, receiver-origin feedback and sensor-value RF input remain unverified. Incoming Arctech frames do not identify sender/action. See [RF433 results](later-runtime-results.md#rf433-reception-and-separate-command-paths). |
+| Signed MQTT test plugin | **RUNTIME VERIFIED** on one dedicated gateway | A controlled plugin import was followed by an authenticated subscriber receiving a test publication. A later live daemon restart under dual-interface IPv4 isolation also had subscriber-confirmed delivery. Other starts have publish-call logs only; cold-boot subscriber receipt remains unverified. The one-shot plugin and private broker details are not included. |
 | Z-Wave `isFailed` semantics | Code path **STATIC CODE VERIFIED**; late-callback overwrite **HYPOTHESIS** | `failed=True` must not be read as unreachable. |
 | Home Assistant integration experiment | Token flow, selected reads, and entity creation **RUNTIME VERIFIED**; test-plug On **OWNER-REPORTED PHYSICAL OBSERVATION** | Polling stock API state reads is implemented; sustained polling behavior, callback forwarding, connected-device Off delivery, and complete bidirectional synchronization **NOT YET VERIFIED**. |
 | `sensorValueUpdated` callback | **RUNTIME VERIFIED** with controlled simulated input in the production daemon | No RF was emitted and no persistent sensor reading was created. Physical sensor-origin input and sensor-to-MQTT delivery are **NOT YET VERIFIED / NOT IMPLEMENTED**. See [hardware verification](../HARDWARE_VERIFICATION.md) and [testing](testing.md). |
+
+### Later runtime and firmware evidence
+
+| Claim | Status | Basis and limit |
+| --- | --- | --- |
+| Modified R1-derived registration and OpenID callback, November 3 | **RUNTIME VERIFIED** | JSONL registration/callback observations plus browser/session record; not untouched-stock login |
+| R1 and rc5 OpenID-handler identity | Artifact bytecode hashes match recorded deployed handler | Does not establish byte identity with original stock or rc5 runtime verification |
+| Later rc4 installation | Recorded installed-ROM hash match | Normal boot/install evidence, not failed-boot recovery |
+| rc5 build/tests/native acceptance | Recorded tests and native validator passed; image SHA-256 independently matched | No rc5 flash or boot test recorded |
+| Controlled RemoteSupport tunnel reproduction | **NOT YET VERIFIED** from located primary evidence | Earlier narrative and static-review status conflict; [evidence gap](remote-support.md#controlled-verification-evidence-gap) retained explicitly |
+
+See [later runtime results](later-runtime-results.md) for exact artifact
+identity, dates, test counts, and capture boundaries; [authentication](authentication.md#dropbear-and-owner-ssh)
+separates ROM/first-boot SSH policy from runtime and owner public-key login.

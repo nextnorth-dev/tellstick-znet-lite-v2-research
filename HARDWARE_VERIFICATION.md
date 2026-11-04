@@ -1,6 +1,7 @@
 # TellStick ZNet Lite V2: physical hardware verification
 
-This matrix records tests on one owned gateway running firmware 1.3.2.
+This matrix records tests on one owned gateway, initially running firmware 1.3.2,
+with later modified-runtime and firmware-artifact results labelled separately.
 Evidence labels distinguish recorded runtime results, owner-observed physical
 behavior, static analysis, and emulation.
 
@@ -24,7 +25,7 @@ behavior, static analysis, and emulation.
 | Stock React management routes through LocalOwner HTTPS | `telldus.web.React`, registered `IWebReactHandler` components, and LocalOwner dashboard navigation | The deployed dashboard shows direct links to `/plugins`, `/lua`, and `/telldus/settings`. After LocalOwner login, a separate Chrome tab rendered all three pages, loaded their stock scripts, and displayed route-specific content. The Plugins UI made owner-session GET requests to `/pluginloader/plugins` and `/pluginloader/keys` (both HTTP 200); no configuration input was rendered in the initial view. No plugin configuration values were inspected or recorded, and no stock management operation was invoked. | **RUNTIME VERIFIED** for authenticated navigation, browser rendering, and plugin/key list reads; configuration and write operations plus secret-field presentation **NOT YET VERIFIED** |
 | Home Assistant LocalOwner stock-API prototype | Prototype config flow, TLS certificate pin, stock `PUT /api/token`, LocalOwner approval, and JWT validation | Home Assistant 2026.9.4 completed an owner-approved stock-token flow against the physical 1.3.2 gateway, then read system, device, sensor, and transport data and created switch entities. The owner observed the selected Z-Wave test plug turn on from HA while it was connected. The owner unplugged it later; the subsequent Off reading is explained by that disconnection and is not evidence that HA's earlier On failed. A physical Off transition commanded by HA while the plug remained connected was not independently confirmed. The prototype polls stock API state but does not forward daemon callbacks to HA. | Token approval, selected API reads, and entity creation **RUNTIME VERIFIED**; HA On delivery to the test plug **OWNER-REPORTED PHYSICAL OBSERVATION**; polling is implemented, while sustained polling behavior, connected HA Off delivery, callback forwarding, and complete bidirectional synchronization are **NOT YET VERIFIED** |
 | Stock session cookie before overlay | CherryPy configuration | Stock anonymous responses set `session_id` with `HttpOnly`, without `Secure` or `SameSite`. RAM session storage follows from the active stock firmware configuration, not a memory inspection. | Cookie attributes **RUNTIME VERIFIED**; storage **STATIC CODE VERIFIED** |
-| SSH access | Dropbear firmware configuration | The owned gateway accepted an authorized root SSH login; the daemon ran on port 22. No firmware support key was used to log in. | **RUNTIME VERIFIED** |
+| SSH access | Dropbear firmware configuration | The owned gateway accepted authorized root SSH on port 22. A November 3 record identifies a fresh public-key login independently of vendor support credentials. ROM defaults, first-boot policy, and contradictory/missing dated active-UCI records are separated in [authentication](docs/authentication.md#dropbear-and-owner-ssh). No single active password-policy value is established across runs. | **RUNTIME VERIFIED** |
 | RF433 host interface | Firmware and earlier hardware inspection | The application held the RF433 USB serial interface and logged its controller version. | Host/controller startup **RUNTIME VERIFIED** |
 | RF433 raw receive events | `rf433RawData` observer and raw event log | The physical gateway logged repeated `arctech` / `selflearning` frames. The logger exposed no decoded method or device ID, so the sender and action could not be attributed from these entries alone. | Raw receive event observation **RUNTIME VERIFIED**; sender/action attribution **NOT YET VERIFIED** |
 | RF433 WMR-252 pairing and control | LocalOwner WMR-252 route using the stock RF433 component plus stock device API On/Off | The route queued one `arctech` / `selflearning-dimmer` ON command and reported adapter acceptance. The owner then observed the WMR-252 indicator respond to the pairing attempt and its connected lamp switch through dashboard On/Off. No independent electrical or RF capture was made. | Adapter acceptance **RUNTIME VERIFIED**; pairing indication and physical On/Off **OWNER-REPORTED PHYSICAL OBSERVATION** |
@@ -52,7 +53,7 @@ behavior, static analysis, and emulation.
 | Local system status | LocalOwner status route and browser dashboard | Dashboard showed cloud-isolation marker, updater disabled, MQTT plugin present, and RF433/Z-Wave components loaded. These are process/configuration indicators, not proof of zero possible vendor egress or radio functionality. | **RUNTIME VERIFIED** for displayed indicators |
 | Cloud isolation subpaths | `CloudIsolation.install_cloud_isolation` and vendor updater service | The corrected `CloudIsolation.py` matched the gateway copy and was loaded by a normal daemon restart. After restart, the daemon logged `LocalOwner: Telldus Live transport disabled`; LocalOwner login, stock token approval/JWT/API reads, and MQTT startup publication all passed. The catalog no-op accepts the bound-method arguments. No scheduled catalog refresh was separately observed. | Transport hook and corrected hook installation **RUNTIME VERIFIED**; actual catalog callback invocation **NOT YET VERIFIED**; config-upload suppression **STATIC CODE VERIFIED** |
 | Signed plugin startup | Loader code and a separately built Python 2.7 MQTT egg | The installed loader accepted the detached egg signature. `telldus.startup` ran during normal daemon starts, including after controlled restarts. | **RUNTIME VERIFIED** |
-| MQTT publication | One-shot startup publisher | A subscriber received the test topic/payload during controlled import. Later normal daemon starts logged successful publish calls; those later publishes had no independent subscriber receipt recorded. | Import-to-broker receipt and permanent startup **RUNTIME VERIFIED** within those separate evidence limits |
+| MQTT publication | One-shot startup publisher | A subscriber received the test topic/payload during controlled import. Other starts logged successful publish calls only; a later live daemon restart under dual-interface IPv4 isolation had an independent subscriber receipt, as recorded in the isolation row above. Cold-boot subscriber receipt remains unverified. | Import-to-broker receipt and permanent startup **RUNTIME VERIFIED** within those separate evidence limits |
 | Empty `packages` list | `Loader.importPlugin` code | The real loader in the real plugin directory accepted `packages: []`, completed installation/loading, and returned success. With no package to iterate, no detached package signature was checked. | **RUNTIME VERIFIED** |
 | Plugin-name filesystem path | `Loader.importPlugin` path construction | A controlled, uniquely named test target outside the plugin directory was created through the manifest name. Replacing that test-owned target removed its prior sentinel. The target and staging archive were then deleted. No existing user data was tested. | **RUNTIME VERIFIED** for the local loader path and replacement behavior |
 | Active plugin keyring and `~` file | GPG wrapper and pre-change backups | The loader used `plugins.keyring`. A temporary GPG reproduction showed that `plugins.keyring~` is the previous public keyring generated during a later key import; it is not a second active trust store. Neither file was changed during this verification. | **RUNTIME VERIFIED** |
@@ -60,13 +61,32 @@ behavior, static analysis, and emulation.
 | Physical RF-origin sensor input | Fineoffset sensor entry in saved configuration | A compatible physical sensor was unavailable during the test; no RF-origin sensor input was generated or evaluated. | Outside the scope of this test |
 | Sensor-to-MQTT chain | Proposed MQTT v2 | No sensor-event publisher was implemented and no sensor-to-MQTT broker subscriber test was run. | **NOT YET IMPLEMENTED OR TESTED** |
 
+## Later runtime and release results
+
+Earlier matrix rows retain their original test conditions. Later results do
+not retroactively change an earlier test's transport or runtime environment.
+
+| Finding / environment | Recorded result | Limit |
+| --- | --- | --- |
+| Modified R1-derived runtime, November 3 | Live registration received/applied, then fresh OpenID callback; browser/session record reports authenticated Index | Not untouched-stock login; JSONL alone does not identify redirect destination |
+| Live RF433 processing, November 2 | Nexa learn, On/Off, dim ACKs/events; operator reported physical response | Not measured light output, receiver acknowledgement, or UDP 42314 delivery |
+| Live Z-Wave processing, November 2 | Inclusion/interview messages, exclusion status and application removal; separate failed-node probe/removal trace | Final persistent controller membership not independently queried; secure request does not prove completed secure negotiation |
+| Later owner rc4 installation | Release validation records installed rc4 ROM hash match | Not failed-boot recovery or full-flash restoration |
+| Lite rc5 artifact | Exact image integrity/content checks, 33 Python tests passed/one skipped, three JavaScript suites passed, seven files compiled, native validator and `sysupgrade -T` accepted | No rc5 flash or boot test recorded |
+
+Dates, primary-record identifiers, artifact identities, and the R1/rc5 bytecode
+comparison are in [later runtime results](docs/later-runtime-results.md).
+
 ## Plugin and MQTT evidence boundary
 
 On normal daemon starts, the installed egg passed GPG verification, the
 `telldus.startup` class ran, and its logger reported a successful publish to
 `tellstick/status`. A separate subscriber received
-`hello-from-tellstick` during a controlled import run. Later daemon logs show
-publish calls, not broker delivery acknowledgments.
+`hello-from-tellstick` during a controlled import run. Other daemon logs show
+publish calls only. A later live restart under dual-interface IPv4 isolation
+also had an independent subscriber receipt; the cold boot did not have a
+subscriber spanning the reboot. These are separate runs, not evidence of
+delivery for every startup publication.
 
 The loader parses `manifest.yml` before iterating over package signatures. Package files are verified through detached `.asc` signatures against the active public keyring. An empty package list skips that loop and still produces a loaded manifest-only plugin. This establishes a local importer behavior, not an anonymous HTTP upload path. Anonymous requests to the plugin routes redirected to login; an authenticated web upload has not been replayed end to end.
 
@@ -95,8 +115,8 @@ The exact slot signature is `sensorValueUpdated(self, device, valueType, value, 
 | `telldus.DeviceManager.sensorValueUpdated(self, device, valueType, value, scale)` | `@signal` source; plugin receives it through `implements(ISignalObserver)` and `@slot('sensorValueUpdated')`. Values come from `Device.setSensorValues` through `sensorValuesUpdated`. | Callback dispatch with controlled simulated input in the production daemon **RUNTIME VERIFIED**; physical RF-origin input was outside test scope because no compatible sensor was available |
 | `telldus.DeviceManager.stateUpdated(self, device, ackId=None, origin=None, executedState=None, executedStateValue=None)` | Internal device-state update method preceding the `deviceStateChanged` signal path. | One physical plug state update was logged with state `1` and unknown origin during the inclusion/control session: **RUNTIME VERIFIED** for callback execution only. It does not establish an RF acknowledgement or remote OFF transition. |
 | `telldus.DeviceManager.__deviceStateChanged(self, device, state, stateValue, origin)` | `@signal('deviceStateChanged')`; a plugin slot has the same four event arguments after `self`. `Device.setState` enters this path through `stateUpdated`. | Physical-button OFF event and refreshed stock state **RUNTIME VERIFIED** in the row above; a callback correlated specifically to a dashboard-issued command was not separately captured |
-| `rf433.RF433.decode(self, msg)` | `@signal('rf433RawData')`; plugin slot signature is `(self, data)`. `productiontest.Server.rf433RawData` is an existing consumer that forwards decoded data to the registered UDP listener. | **STATIC CODE VERIFIED**; no RF callback observed in this test |
-| `zwave.telldus.TelldusZWave` observer methods | `IZWObserver.zwaveReady(self)`, `nodeAdded(self, device, node)`, and `interviewDone(self, device, cmdClass, data)` are registered through `ObserverCollection`, not `@slot`. `productiontest.Server` is an existing observer. | `nodeAdded(self, device, node)` **RUNTIME VERIFIED** on physical inclusion; `zwaveReady` has prior runtime evidence; `interviewDone` remains **STATIC CODE VERIFIED** only |
+| `rf433.RF433.decode(self, msg)` | `@signal('rf433RawData')`; plugin slot signature is `(self, data)`. `productiontest.Server.rf433RawData` is an existing consumer that forwards decoded data to the registered UDP listener. | **STATIC CODE VERIFIED** path; no RF callback in this controlled sensor test. Separate daemon logs contain incoming Arctech frames; UDP forwarding remains unverified. |
+| `zwave.telldus.TelldusZWave` observer methods | `IZWObserver.zwaveReady(self)`, `nodeAdded(self, device, node)`, and `interviewDone(self, device, cmdClass, data)` are registered through `ObserverCollection`, not `@slot`. `productiontest.Server` is an existing observer. | `nodeAdded(self, device, node)` **RUNTIME VERIFIED** on physical inclusion; `zwaveReady` has prior runtime evidence; `interviewDone` was not captured in that earlier observer test; later Live captures record interview notifications, separately from direct observer invocation |
 
 The `@signal` decorator runs its source method first, then queues matching `@slot` callbacks for the main application loop. `IZWObserver` calls are direct observer calls in the emitting flow. These execution models should remain separate in an event publisher.
 

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Offline prototype for the stock Python 2.7 plugin interfaces.
-Not installed on a TellStick. HTTPS must be configured before use.
+"""Published prototype for the stock Python 2.7 plugin interfaces.
+Related extensions ran on hardware; this exact snapshot is not deployment-verified.
+HTTPS must be configured before use.
 """
 import base64
 import cgi

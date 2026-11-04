@@ -1,7 +1,8 @@
 # Test methods and results
 
 Physical results are from one owned TellStick ZNet Lite V2 running firmware
-1.3.2 with the LocalOwner prototype active on a modified gateway. They do not
+1.3.2 with related LocalOwner extensions active on a modified gateway. Later
+R1-derived and Live-processing results are identified separately. They do not
 establish behavior on an untouched-stock installation.
 
 ## Hardware tests
@@ -35,6 +36,20 @@ produced a recorded adapter acceptance; the pairing indication and load
 On/Off are **OWNER-REPORTED PHYSICAL OBSERVATION**. These results and their
 individual limits are recorded in the
 [hardware verification matrix](../HARDWARE_VERIFICATION.md).
+
+## Later runtime and release verification
+
+[Later runtime results](later-runtime-results.md) records the November 3
+modified-R1 registration/OpenID callback, November 2 Live RF433/Z-Wave
+captures, and separate R1/rc5 artifact acceptance and boot limits. The rc5
+release record reports 33 Python tests passed, one framework-dependent skip,
+three JavaScript suites passed, and seven runtime files compiled; it explicitly
+records no rc5 flash or boot test. These do not supersede the earlier
+prototype tests or establish untouched-stock login.
+
+The MQTT plugin has subscriber-confirmed delivery during controlled import
+and during a later live daemon restart under scoped IPv4 isolation. Cold-boot
+publication has a startup log but no subscriber spanning the reboot.
 
 ## Offline and emulated tests
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Offline-review replacement for stock web Server: same router, HTTPS only.
-No real device installation. Requires owner-supplied TLS cert and key.
+"""Prototype replacement for stock web Server: same router, HTTPS only.
+Exact snapshot deployment is unverified. Requires owner-supplied TLS cert and key.
 """
 import os
 import stat

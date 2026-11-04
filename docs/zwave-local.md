@@ -4,8 +4,9 @@ The official 1.3.2 application exposes generic Z-Wave device operations but
 not a complete local administration API. On one owned gateway, inclusion
 produced a captured `nodeAdded` callback and a physical-button state change
 was recorded. On/Off switching of one connected load was an
-**OWNER-REPORTED PHYSICAL OBSERVATION**. Exclusion, other node types, and
-general radio reliability remain unverified. The [hardware study](zwave.md)
+**OWNER-REPORTED PHYSICAL OBSERVATION**. Later Live captures record exclusion
+and application node-removal events; final controller membership, other node
+types, and general radio reliability remain unverified. The [hardware study](zwave.md)
 covers the controller and serial interface.
 
 ## Controller and devices
@@ -16,13 +17,18 @@ The generic HTTP device API reaches `DeviceNode` for known nodes. That class map
 
 ## Administration gap
 
-The firmware has internal controller methods for inclusion, exclusion, and other administration. Selected operations are wired through Telldus Live handlers, while the 18 examined stock local HTTP API calls do not expose a complete local administrative surface. **VERIFIED IN EMULATION ONLY:** original controller code queued inclusion and exclusion requests to a fake message sink. Later physical research verified one inclusion and `nodeAdded` callback through a separate experimental local-control path; physical exclusion remains untested.
+The firmware has internal controller methods for inclusion, exclusion, and other administration. Selected operations are wired through Telldus Live handlers, while the 18 examined stock local HTTP API calls do not expose a complete local administrative surface. **VERIFIED IN EMULATION ONLY:** original controller code queued inclusion and exclusion requests to a fake message sink. Later physical research verified one inclusion and `nodeAdded` callback through a separate experimental local-control path. The November 2 Live captures separately record normal and Secure inclusion
+requests, interview notifications, exclusion status, and application removal. The
+failed-node retest records a probe, `isFailed:true`, removal request, and
+`deviceremoved`. These establish application-level results, not an independently
+queried final controller table. A secure request does not establish completed
+secure negotiation. See [later captures](later-runtime-results.md#later-z-wave-captures-november-2).
 
 | Capability | Evidence in code | Offline execution | Physical test | Existing local HTTP support |
 | --- | --- | --- | --- | --- |
 | Controller startup and node discovery | STATIC CODE VERIFIED | Imports only | Host interface/version notice and one physical inclusion with `nodeAdded` callback RUNTIME VERIFIED | Partial device listing |
 | Generic node on/off/up | STATIC CODE VERIFIED | VERIFIED IN EMULATION ONLY with a fake node | On/Off of one connected test load through an experimental local-control path **OWNER-REPORTED PHYSICAL OBSERVATION**; other methods and models NOT YET VERIFIED | Generic device operations |
-| Inclusion and exclusion | STATIC CODE VERIFIED | VERIFIED IN EMULATION ONLY with a fake message sink | Inclusion RUNTIME VERIFIED on one owned gateway; exclusion NOT YET VERIFIED | No complete stock local admin surface |
+| Inclusion and exclusion | STATIC CODE VERIFIED | VERIFIED IN EMULATION ONLY with a fake message sink | Inclusion, later Live exclusion status and application removal RUNTIME VERIFIED; final controller membership NOT YET VERIFIED | No complete stock local admin surface |
 | Association management | STATIC CODE VERIFIED in internal components | NOT YET VERIFIED | NOT YET VERIFIED | No reviewed local admin route |
 | Existing network preservation | Settings and controller paths identified | NOT YET VERIFIED | NOT YET VERIFIED | Not applicable |
 | Full cloud-free management | Components exist | NOT YET VERIFIED | NOT YET VERIFIED | Missing reviewed admin/event surface |

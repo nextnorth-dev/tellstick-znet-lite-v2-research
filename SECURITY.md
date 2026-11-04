@@ -9,8 +9,9 @@ The research is conducted on personally owned hardware and is not affiliated wit
 This repository is not an official firmware distribution or security support channel.
 
 The code in `prototype/` is experimental research, not a security patch or
-supported installation package. Selected behavior has been exercised on one
-dedicated, modified firmware 1.3.2 gateway (see
+supported installation package. Related extended code was exercised on one
+dedicated, modified firmware 1.3.2 gateway; deployment of the exact published
+snapshot is not established (see
 [HARDWARE_VERIFICATION.md](HARDWARE_VERIFICATION.md)). It has not had an
 independent security review. Other hardware, network, certificate, and
 recovery assumptions remain unverified. See the
