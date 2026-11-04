@@ -12,6 +12,8 @@ The `firmware` MTD region overlaps `kernel` and `rootfs`; the documented flash m
 
 The inspected `/sbin/sysupgrade` accepts a local image path, so the Linux-side code has a cloud-independent input route for an official image when an authorized root shell and a working system are available. The original study statically traced its board checks and write path. Later R1/rc5 candidates passed native checks, and a later rc4 installation was verified by a ROM match. Those are separate from vendor-signature validation. A local-image route is not a proven recovery method for a device that no longer boots, and no full reflash should be attempted without a separately tested serial/bootloader path and verified device-specific backups.
 
+OpenTZnet Lite RC5 passed build, artifact-integrity, and native image-validation checks, but was not flashed or boot-tested on the physical gateway. These checks do not establish successful installation, boot, runtime operation, or failed-boot recovery.
+
 ## Overlay persistence and ordinary upgrades
 
 The stock SquashFS root and JFFS2 overlay support a non-flashing plugin installation. `usr/bin/tellstick-znet.py` imports plugin classes by module name, and `/etc/init.d/telldus-server` starts that script through procd. Authorized root SSH, writable plugin storage, signed egg import, `telldus.startup`, and restart persistence were verified on an owned gateway using a separate one-shot MQTT plugin. A distinct experimental LocalOwner overlay was later installed and selected HTTPS/authentication, API, dashboard, and device-control paths were exercised on that modified gateway. Those tests do not establish free-space margins, upgrade persistence, a tested rollback, or general deployment safety.
