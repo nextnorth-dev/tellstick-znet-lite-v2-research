@@ -75,3 +75,9 @@ Telldus.conf
 *.sqlite*
 tests/local-https.*/
 tests/tls-probe.*/
+build/
+tools/build_personal_localowner_recovery.py
+tools/prepare_original_restore.py
+HANDOFF_TO_NEXT_AGENT.md
+docs/CLAUDE-47M-TOKEN-AUDIT.md
+docs/publication-review.md
