@@ -2,25 +2,10 @@
 
 [Documentation index](../README.md#documentation)
 
-## Overview
-
-The Telldus TellStick ZNet Lite V2 exposes a functional serial console that provides access to both the U-Boot bootloader and the embedded Linux operating system.
-
-During this investigation, bidirectional UART communication was established using an ESP32-S3-based serial bridge. The bootloader was successfully interrupted, its command interface examined, and the Linux startup sequence captured.
-
-The serial interface provides a valuable entry point for firmware analysis, system diagnostics, recovery research and understanding the gateway’s internal architecture.
-
-Verified capabilities include:
-
-- Capturing the complete bootloader startup banner
-- Interrupting the automatic boot sequence
-- Accessing the interactive U-Boot command prompt
-- Listing the available bootloader commands
-- Observing Linux kernel initialization
-- Accessing the Linux serial console
-- Inspecting the running operating system
-
-The observations below were obtained from personally owned hardware running stock firmware version 1.3.2.
+The examined TellStick ZNet Lite V2 running firmware 1.3.2 exposes a
+bidirectional UART console. An ESP32-S3 bridge reached U-Boot and Linux;
+captured output identifies the bootloader, platform, flash, memory, and
+internal USB devices.
 
 ## Hardware and Serial Interface
 
@@ -509,7 +494,9 @@ Before modifying firmware, relevant considerations include:
 - Maintaining reliable serial access
 - Avoiding interruption during flash operations
 
-A 16 MiB full-flash backup was later located in private local storage. Its MTD slices and the official 1.3.2 image were compared bytewise for selected regions, including an exact SquashFS payload match. No restore has been attempted; the backup alone is not a tested recovery route. Its device-specific contents and private location are not distributed here.
+A 16 MiB full-flash backup was compared bytewise with selected regions of the
+official 1.3.2 image, including an exact SquashFS payload match. No restore
+has been attempted.
 
 No device-specific firmware image or calibration data is distributed in this repository.
 
@@ -535,32 +522,8 @@ No device-specific firmware image or calibration data is distributed in this rep
 | Full HTTP recovery behavior | Not fully tested | Not established |
 | Complete electrical schematic | Not available | Not established |
 
-## Research Significance
-
-The accessible UART interface is one of the most useful diagnostic features of the TellStick ZNet Lite V2.
-
-It allows direct observation of the boot process before the main application starts and provides visibility into both the bootloader and operating system.
-
-The U-Boot command environment exposes recovery and diagnostic capabilities that are not available through the standard gateway interface.
-
-Combined with Linux console access, the serial interface enabled identification of the device’s hardware architecture, internal radio interfaces, firmware layout and undocumented wireless functionality.
-
-These findings establish a practical foundation for further firmware, hardware and interoperability research.
-
 ## Related Documentation
 
 - [Hardware Architecture](hardware.md)
 - [Undocumented Wi-Fi](undocumented-wifi.md)
 - [Remote Support Architecture](remote-support.md)
-
-## License and Disclaimer
-
-This document contains independent research performed on personally owned hardware.
-
-It is not affiliated with, sponsored by or endorsed by Telldus.
-
-Original research documentation is licensed under Creative Commons Attribution 4.0 International (CC BY 4.0), unless otherwise noted.
-
-No private credentials, device-specific secrets, firmware images or calibration data are distributed.
-
-Telldus and TellStick are trademarks of their respective owners.

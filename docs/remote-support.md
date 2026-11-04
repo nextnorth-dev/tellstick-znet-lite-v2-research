@@ -4,15 +4,10 @@
 
 ## Overview
 
-The Telldus TellStick ZNet Lite V2 firmware contains a remote-support component that uses SSH to establish an outbound connection and provide remote access through reverse port forwarding.
-
-The investigation identified an RSA private key distributed within the installed firmware filesystem, along with the Python package responsible for remote-support functionality.
-
-Controlled experiments against a researcher-operated SSH endpoint reproduced the reverse-forwarding mechanism.
-
-This document describes the observed architecture, the location and role of the embedded authentication material, the verification performed, and the associated security considerations.
-
-The embedded SSH key is not a demonstrated authentication bypass of the gateway’s local SSH service.
+Firmware 1.3.2 includes a Python remote-support component and an RSA private
+key in its filesystem. Reverse SSH forwarding was reproduced against a
+researcher-controlled endpoint. This does not demonstrate an authentication
+bypass of the gateway's local SSH service.
 
 ## Research Environment
 
@@ -95,14 +90,8 @@ The file identification command returned:
 usr/lib/python2.7/site-packages/remotesupport/id_rsa: PEM RSA private key
 ```
 
-Inspection of the file header confirmed the expected RSA private-key container format:
-
-```text
------BEGIN RSA PRIVATE KEY-----
-[PRIVATE KEY MATERIAL OMITTED]
-```
-
-The private-key contents are deliberately excluded from this repository.
+The file was identified as an RSA private-key container. Neither its contents
+nor a copy of the key is included in this repository.
 
 ### Significance
 
@@ -328,33 +317,9 @@ Sanitized evidence should preserve the original technical meaning without exposi
 | Access to production support infrastructure | Not tested | Not claimed |
 | Authentication bypass | Not demonstrated | Not established |
 
-## Conclusion
-
-The examined TellStick ZNet Lite V2 firmware contains a Python-based remote-support component with an embedded RSA private key.
-
-The support architecture uses an outbound SSH connection and reverse TCP forwarding to provide a path toward a local service on the gateway.
-
-The embedded authentication material can be identified in the firmware filesystem, and the reverse-forwarding mechanism was reproduced in a controlled test environment.
-
-The primary security concern is the presence of recoverable private authentication material in distributed firmware, particularly if credentials are reused or granted broad server-side permissions.
-
-However, the local evidence does not establish the key’s complete deployment scope, the manufacturer’s server-side authorization policies, or access to arbitrary devices.
-
-The observed mechanism provides remote connectivity, not an independently demonstrated bypass of the gateway’s SSH authentication.
-
 ## References
 
 - [Telldus GitHub organization](https://github.com/telldus)
 - [tellstick-server](https://github.com/telldus?tab=repositories&q=tellstick-server)
 - [tellstick-server-plugins](https://github.com/telldus?tab=repositories&q=tellstick-server-plugins)
 - [OpenSSH manual pages](https://www.openssh.com/manual.html)
-
-## License and Disclaimer
-
-This is independent research performed on personally owned hardware.
-
-The document is not affiliated with or endorsed by Telldus.
-
-Original documentation is licensed under Creative Commons Attribution 4.0 International (CC BY 4.0), unless otherwise noted.
-
-No private keys, usable authentication credentials, proprietary firmware images or device-specific secrets are distributed.

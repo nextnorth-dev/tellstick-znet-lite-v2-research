@@ -2,28 +2,8 @@
 
 [Documentation index](../README.md#documentation)
 
-## Overview
-
-The Telldus TellStick ZNet Lite V2 is an embedded Linux home automation gateway built around an Atheros AR933x platform.
-
-Unlike a simple radio-to-Ethernet bridge, the device contains a complete Linux computer with dedicated processing, memory, non-volatile storage, networking hardware and separate radio controllers.
-
-The examined hardware includes:
-
-- Atheros AR933x system-on-chip
-- 64 MB DDR2 RAM
-- 16 MB Winbond SPI NOR flash
-- Integrated Ethernet networking
-- Integrated 2.4 GHz Wi-Fi hardware
-- USB host controller and internal USB hub
-- Maxim MAX7030 RF433 transceiver
-- Microchip PIC18F25K50 microcontroller
-- Sigma Designs Z-Wave controller
-- Accessible 3.3 V UART console
-
-This document combines physical component identification with evidence obtained from the bootloader, Linux kernel and operating-system interfaces.
-
-Hardware observations refer to the examined TellStick ZNet Lite V2 running firmware version 1.3.2.
+Hardware observations below combine physical inspection with bootloader and
+Linux evidence from one TellStick ZNet Lite V2 running firmware 1.3.2.
 
 ## Hardware Specifications
 
@@ -450,73 +430,7 @@ The research combines several evidence sources.
 | Full power-rail mapping | Not completed | Not established |
 | Complete RF signal mapping | Not completed | Not established |
 
-The distinction between software identification, physical inspection and direct electrical measurement is maintained throughout this document.
-
-## Research Opportunities
-
-Several areas remain suitable for further investigation.
-
-### RF433 Microcontroller
-
-The PIC18F25K50 may be investigated to better understand the processing performed before radio events reach the Linux application.
-
-### Hardware Signal Mapping
-
-Tracing the connections between the MAX7030, PIC microcontroller and surrounding components would help establish the exact radio-control architecture.
-
-### Wi-Fi Antenna and RF Path
-
-Further physical inspection could establish the antenna configuration and any populated or unpopulated matching-network components.
-
-### Power Architecture
-
-Identifying voltage regulators, supply rails and power sequencing would improve the hardware documentation.
-
-### Hardware Revision Comparison
-
-Comparing multiple TellStick ZNet Lite V2 units could help determine whether the identified components and wireless capability are consistent across production revisions.
-
-These are potential research directions, not completed findings.
-
-## Evidence and Publication Policy
-
-The repository publishes technical observations and sanitized evidence.
-
-The following material is excluded:
-
-- Personal identifiers
-- Device-specific MAC addresses
-- Wi-Fi credentials
-- Private SSH keys
-- Authentication tokens
-- Unique hardware calibration data
-- Unmodified firmware images containing sensitive material
-
-Hardware identifiers, component markings, kernel messages and technical measurements are retained when relevant to reproducibility.
-
-## Conclusion
-
-The TellStick ZNet Lite V2 is a complete embedded Linux system built around an Atheros AR933x platform.
-
-Its hardware includes 64 MB DDR2 RAM, 16 MB SPI flash, integrated Ethernet and Wi-Fi, an internal USB architecture, and separate RF433 and Z-Wave controllers.
-
-The integrated Wi-Fi interface is especially notable because it was successfully tested despite not being exposed as a standard product feature.
-
-The accessible UART console and identifiable internal interfaces make the device suitable for detailed hardware, firmware and interoperability research.
-
-The available evidence establishes the main system architecture, while complete electrical schematics and lower-level radio-controller behavior remain subjects for further investigation.
-
 ## Related Documentation
 
 - [Undocumented Wi-Fi](undocumented-wifi.md)
 - [Remote Support Architecture](remote-support.md)
-
-## License and Disclaimer
-
-This is independent research performed on personally owned hardware.
-
-The documentation is not affiliated with, sponsored by or endorsed by Telldus.
-
-Original research documentation is licensed under Creative Commons Attribution 4.0 International (CC BY 4.0), unless otherwise noted.
-
-Telldus and TellStick are trademarks of their respective owners.

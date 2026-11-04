@@ -3,15 +3,9 @@ TellStick ZNet Lite V2 — Selected sanitized boot-log excerpts
 Stock firmware: 1.3.2
 Serial configuration: 115200 8N1
 
-This is a selection of verified excerpts already present in the repository,
-not a complete raw log or an uninterrupted boot transcript. Section titles
-and source references are editorial metadata, not device output. Excerpts
-are separated below; gaps do not imply consecutive output. Original line
-content and available timestamps are preserved. No timestamps were added.
-No new hardware validation was performed during this documentation cleanup.
-
-Sources refer to the existing documents at commit
-74399368c3920cf72dd81d5f9d6f78626b01066c.
+Selected excerpts from the captured boot log; they are not a complete or
+continuous transcript. Section titles and source references are editorial.
+Original lines and available timestamps are preserved.
 
 === U-Boot startup ===
 Source: docs/uart-and-uboot.md — Original U-Boot Startup Log

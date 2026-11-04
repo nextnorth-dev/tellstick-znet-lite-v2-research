@@ -1,4 +1,4 @@
-# Firmware images, flash dumps and device-specific backups
+# Firmware images and device-specific data
 *.bin
 *.img
 *.rom
@@ -31,7 +31,7 @@ id_ed25519.*
 secrets/
 private/
 
-# Unsanitized research material; only explicitly reviewed logs are publishable
+# Private captures and logs
 raw-logs/
 unsanitized/
 private-captures/
@@ -69,8 +69,15 @@ temp/
 extracted/
 rootfs/
 firmware/
-*owner.json
-*Telldus.conf
+owner.json
+*-owner.json
+Telldus.conf
 *.sqlite*
 tests/local-https.*/
 tests/tls-probe.*/
+build/
+tools/build_personal_localowner_recovery.py
+tools/prepare_original_restore.py
+HANDOFF_TO_NEXT_AGENT.md
+docs/CLAUDE-47M-TOKEN-AUDIT.md
+docs/publication-review.md

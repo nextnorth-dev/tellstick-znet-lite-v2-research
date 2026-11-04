@@ -1,49 +1,92 @@
 # TellStick ZNet Lite V2 research
 
-Independent research into the hardware and stock firmware of the TellStick ZNet Lite V2, with a focus on local operation when Telldus Live is unavailable. The examined firmware is version 1.3.2. This repository contains original documentation, an experimental local-authentication plugin, offline tests, and sanitized results from targeted tests on an owned gateway. The one-shot MQTT test plugin and private test artifacts are not distributed here.
+Hardware and firmware research on the Telldus TellStick ZNet Lite V2, focused
+on firmware 1.3.2. The findings combine static analysis of the vendor image
+with bounded tests on an owned device. This project is independent of Telldus.
 
-## What is established
+This is a research repository, not a firmware distribution or supported
+installation. It contains no firmware images, flash dumps, credentials,
+private keys, or device-specific configuration.
 
-- The examined unit has an AR933x/MIPS host running OpenWrt with a SquashFS root and writable overlay. UART, bootloader access, and the integrated Wi-Fi interface were verified on physical hardware in the earlier research. See [hardware](docs/hardware.md), [firmware](docs/firmware.md), and [Wi-Fi](docs/undocumented-wifi.md).
-- Stock firmware 1.3.2 contains local discovery, an RF433 event/control interface, and a CherryPy HTTP API. UDP 42314 has one replaceable event listener and no handler-level authentication or command acknowledgement; UDP 30303 exposes sensitive discovery information. The HTTP API has device and sensor routes and uses signed tokens. See [local interfaces](docs/interfaces.md) and the [42314 analysis](docs/udp-42314.md).
-- Approval of a new API token in stock firmware depends on a Telldus Live OpenID login. Existing token validation and several device routes run locally in firmware code. That distinction matters: a local API is not, by itself, a cloud-free onboarding path. See [authentication](docs/authentication.md).
-- An independently written Python 2.7 plugin can use the firmware's existing API and JWT machinery. Its login, token approval, and selected API routes were exercised under MIPS user-mode emulation with synthetic settings and mocked devices. See [prototype](prototype/README.md) and [test record](docs/testing.md).
-- A separate signed Python 2.7 MQTT test plugin loaded from `telldus.startup` during normal daemon starts and published a message to a local broker. The installed loader also accepted a manifest-only plugin with `packages: []`. See the [physical verification matrix](HARDWARE_VERIFICATION.md) and [security review](SECURITY_STATIC_REVIEW.md) for exact evidence limits.
-- Stock Z-Wave components include local controller and command paths, but full local administration and radio behavior remain unverified. RF433 has a separate local command path. See [RF433](docs/rf433.md), [Z-Wave local paths](docs/zwave-local.md), and [no-cloud status](docs/no-cloud.md).
+## What the evidence supports
 
-## Validation
+- The examined unit uses an AR9331-class MIPS host, U-Boot, OpenWrt, a SquashFS
+  root filesystem with a JFFS2 overlay, and separate RF433 and Z-Wave interfaces.
+  See [hardware](docs/hardware.md), [firmware](docs/firmware.md), and
+  [UART and U-Boot](docs/uart-and-uboot.md).
+- Stock firmware 1.3.2 exposes local discovery and event interfaces and a
+  token-protected HTTP API. The exact test scope and limitations are documented
+  in [interfaces](docs/interfaces.md), [authentication](docs/authentication.md),
+  and [UDP 42314](docs/udp-42314.md).
+- Selected local-control paths were exercised on one modified test gateway.
+  Results do not establish compatibility with untouched devices or other
+  firmware versions.
+- Physical Z-Wave inclusion produced a captured `nodeAdded` callback and
+  persistent stock-API listing. An owner-initiated button press produced a
+  captured state update; On/Off switching of the connected test load is an
+  **OWNER-REPORTED PHYSICAL OBSERVATION**. The WMR-252-specific RF433 load
+  switching is also **OWNER-REPORTED PHYSICAL OBSERVATION**. These bounded
+  results do not establish general radio support.
+- The stock plugin loader's package-signature and startup path was exercised
+  with a locally signed test plugin. A controlled MQTT publication reached an
+  authenticated subscriber. This did not test arbitrary authenticated uploads
+  or radio-event forwarding.
+- A separate Home Assistant experiment completed owner-approved token
+  issuance, selected stock-API reads, and entity creation. Polling stock API
+  state reads is implemented. The owner reported that an On command reached
+  one connected test plug (**OWNER-REPORTED PHYSICAL OBSERVATION**); sustained
+  polling behavior, callback forwarding, complete bidirectional
+  synchronization, and a connected-device Off command have not been fully
+  verified.
+- A production-daemon sensor callback was tested with simulated input. No RF
+  signal was emitted; physical sensor-origin events and sensor-to-MQTT delivery
+  remain unverified.
+- One cold boot with scoped IPv4 egress blocks passed selected local checks.
+  This does not prove universal or long-duration absence of outbound traffic.
 
-Hardware inspection, UART, and Wi-Fi were verified on the examined unit. Later targeted tests verified discovery, UDP registration, the stock HTTP anonymous boundary, and permanent startup of a signed MQTT test plugin. A subscriber received the controlled-import publication; later normal daemon starts logged successful publish calls without separate subscriber receipts. The `sensorValueUpdated` callback path is **RUNTIME VERIFIED** in the production daemon using controlled simulated sensor input. A compatible physical sensor was not available, so physical RF-origin input was outside the scope of this test. Sensor-to-MQTT forwarding is not yet implemented or tested. RF433/Z-Wave radio delivery and the local-owner prototype remain unverified on the gateway. Earlier API/JWT and local-owner tests passed under MIPS emulation with synthetic data; Z-Wave command tests used mocked hardware. See the [test record](docs/testing.md) and [physical verification matrix](HARDWARE_VERIFICATION.md).
+The [evidence register](docs/evidence-status.md) and
+[physical verification matrix](HARDWARE_VERIFICATION.md) distinguish static
+analysis, emulation, physical observations, owner reports, and unverified
+behavior.
 
-## Local architecture
+## Technical map
 
-```text
-Local client -> stock HTTP API -> device and sensor managers -> RF433 / Z-Wave adapters
-                  ^
-                  | signed API token
-                  |
-Telldus Live OpenID -> stock token approval
-                  |
-                  +-- experimental local owner provider (offline prototype only)
-```
+- [Hardware and firmware](docs/hardware.md), [UART/U-Boot](docs/uart-and-uboot.md),
+  [Wi-Fi research](docs/undocumented-wifi.md), and
+  [firmware update/recovery](docs/update-and-recovery.md)
+- [Local interfaces](docs/interfaces.md), [authentication](docs/authentication.md),
+  and [UDP 42314](docs/udp-42314.md)
+- [RF433](docs/rf433.md) and [Z-Wave code paths](docs/zwave-local.md)
+- [Local access and network isolation](docs/no-cloud.md)
+- [Security review](SECURITY_STATIC_REVIEW.md) and [test methods/results](docs/testing.md)
 
-The prototype retains the stock token format and API dispatcher. It adds an owner login and an approval page and, on HTTPS token requests, directs the stock approval link to that local page. A separate server draft uses CherryPy's existing TLS support. Deployment requirements and unresolved integration work are detailed in [no-cloud status](docs/no-cloud.md).
+## Documentation
 
-## Read next
+- [Evidence status](docs/evidence-status.md) — claim labels and evidence limits
+- [Hardware verification](HARDWARE_VERIFICATION.md) — physical test matrix
+- [Interfaces](docs/interfaces.md) and [authentication](docs/authentication.md)
+- [RF433](docs/rf433.md) and [Z-Wave local paths](docs/zwave-local.md)
+- [Local access and network isolation](docs/no-cloud.md)
+- [Testing](docs/testing.md) and [references](docs/references.md)
+- [Security policy](SECURITY.md)
 
-- [Hardware and UART](docs/hardware.md) · [bootloader](docs/uart-and-uboot.md) · [firmware](docs/firmware.md) · [updates and recovery](docs/update-and-recovery.md)
-- [Local interfaces and API](docs/interfaces.md) · [UDP 42314](docs/udp-42314.md) · [authentication and TLS](docs/authentication.md)
-- [RF433](docs/rf433.md) · [Z-Wave hardware](docs/zwave.md) · [Z-Wave local paths](docs/zwave-local.md)
-- [No-cloud design and remaining work](docs/no-cloud.md) · [offline tests](docs/testing.md) · [hardware readiness](docs/hardware-readiness.md)
-- [Physical verification matrix](HARDWARE_VERIFICATION.md) · [security review](SECURITY_STATIC_REVIEW.md)
-- [References and attribution](docs/references.md) · [security policy](SECURITY.md)
+## Scope and safety
 
-The [prototype README](prototype/README.md) describes the original code. The [test instructions](docs/testing.md) explain the separately obtained firmware required to reproduce the offline results.
+Firmware modification and direct flash access can damage a device or erase its
+configuration. Findings apply to the examined hardware and firmware unless
+stated otherwise; tests used owned or explicitly authorized equipment. No
+recovery procedure is claimed as tested unless the evidence says so. Report
+sensitive issues privately as described in [SECURITY.md](SECURITY.md).
 
-## Acknowledgements
+The LocalOwner material is experimental research. OpenTZnet Lite and the
+LocalOwner product integration are separate development tracks and are not
+released from this repository.
 
-The hardware and firmware investigation began before [issue #1](https://github.com/bobo843032/tellstick-znet-lite-v2-research/issues/1). Thanks to ob-wn for identifying the unauthenticated UDP 30303 interface there; that lead prompted closer examination of the relevant firmware components. The [ob-wn no-cloud project](https://github.com/ob-wn/tellstick-znet-lite-v2-nocloud) provides a separate approach to local access. [R00S's local TellStick add-on](https://github.com/R00S/addon-tellstick-local) demonstrates a Home Assistant path for supported local RF433 functions. Their code has not been copied into this prototype; see [references](docs/references.md) for scope and licenses.
+## Attribution and license
 
-## License and scope
+The research documentation is covered by the repository's
+[CC BY 4.0 license](LICENSE), subject to its stated exclusions. Separate code
+and third-party license boundaries remain applicable; this documentation does
+not grant rights to vendor firmware or other projects' code.
 
-Original documentation is [CC BY 4.0](LICENSE). Original code under `prototype/` and `tests/` is [MIT licensed](LICENSE-CODE). Neither license covers Telldus firmware, third-party projects, private credentials, or device-specific data. This is independent research and is not affiliated with Telldus.
+Telldus and TellStick are trademarks of their respective owners.

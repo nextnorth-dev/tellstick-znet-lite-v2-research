@@ -1,17 +1,28 @@
-# Local owner authentication prototype
+# LocalOwner prototype
 
-This is independently written Python 2.7 code for an **offline integration experiment** with TellStick ZNet Lite V2 firmware 1.3.2. It has not been installed on a gateway. The prototype uses the firmware's plugin interfaces and existing API token manager; it does not contain firmware files or vendor bytecode.
+This independently written Python 2.7 prototype explores local owner
+authentication for TellStick ZNet Lite V2 firmware 1.3.2. It was exercised on
+one modified gateway; it is not a released product or supported installation.
 
-`localowner/LocalOwnerAuth.py` adds an owner login, a session-backed token approval page, logout, rate limiting, and CSRF checks. It changes only the approval URL in successful HTTPS `PUT /api/token` responses: a client opening that URL is directed through local login to the pending approval. Other stock API responses and JWT handling remain with `ApiManager`. A verifier must be provisioned explicitly; there is no default password. `localowner/LocalHttpsServer.py` is a draft alternative CherryPy startup with TLS and Secure cookies. `localowner/local-ui.html` is a small browser UI for system information, devices, sensors, token requests, and basic on/off actions. `provision_owner.py` generates a verifier file for offline review.
+`localowner/LocalOwnerAuth.py` adds owner login, session-bound approval,
+logout, rate limiting, and CSRF checks. On HTTPS token requests it redirects
+the stock approval link through local login; token issuance and other API
+responses remain with the stock `ApiManager`. An owner verifier must be
+provisioned explicitly. `LocalHttpsServer.py` configures CherryPy TLS and
+secure session cookies. `local-ui.html` provides a small interface for API
+reads and basic device actions; `provision_owner.py` creates the verifier.
 
-The tests use an independently obtained and extracted copy of official firmware 1.3.2, a MIPS user-mode emulator, synthetic settings, and fake devices. The actual stock `ApiManager`, API routes, JWT implementation, and CherryPy package are exercised. See [test instructions](../docs/testing.md).
+Selected login, approval, JWT, API, dashboard, and device-control paths were
+tested on the modified gateway. Offline tests use the original firmware
+modules with synthetic settings and devices; they do not exercise physical
+radio behavior. See [test methods and results](../docs/testing.md) and the
+[physical verification matrix](../HARDWARE_VERIFICATION.md).
 
-Known blockers before device deployment:
+Installation on untouched firmware, other versions, general radio support,
+certificate trust across network configurations, upgrade persistence, and
+recovery after a failed boot remain open. See [LocalOwner deployment
+findings](../docs/hardware-readiness.md) and [update and recovery
+paths](../docs/update-and-recovery.md).
 
-- Firmware without the plugin still points token approval to Telldus Live. The HTTPS URL rewrite passed offline tests, but has not been validated with third-party clients or on the gateway.
-- Stock token approval has its own CSRF behavior. The local provider blocks that route for local sessions; the stock Live provider is unchanged.
-- A trusted IP-address certificate and physical TLS behavior have not been established. The stock firewall does not include a TCP 443 allowance in the reviewed image.
-- Overlay capacity, import order, service identity, persistence through upgrade, and a recovery path have not been verified on hardware.
-- The existing web application and actual RF433/Z-Wave state synchronization have not been validated with this plugin on a gateway.
-
-These blockers mean the code should be read as a reproducible experiment, not as a security patch or a supported way to modify a gateway. No installer or modified stock startup file is published. Original source in this directory is under [MIT](../LICENSE-CODE); no Telldus code is relicensed.
+Original code in this directory is licensed under [MIT](../LICENSE-CODE).
+No Telldus code is relicensed.
