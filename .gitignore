@@ -1,4 +1,4 @@
-# Firmware images, flash dumps and device-specific backups
+# Firmware images and device-specific data
 *.bin
 *.img
 *.rom
@@ -12,15 +12,6 @@
 firmware-dumps/
 flash-dumps/
 backups/
-# Candidate build workspaces hold extracted vendor rootfs trees and images
-build/
-
-# Owner-specific recovery helpers are kept local with private restore material
-tools/build_personal_localowner_recovery.py
-tools/prepare_original_restore.py
-
-# Operational handoff contains private LAN addresses and local paths
-HANDOFF_TO_NEXT_AGENT.md
 
 # Private keys and credentials
 .ssh/
@@ -40,12 +31,10 @@ id_ed25519.*
 secrets/
 private/
 
-# Unsanitized research material; only explicitly reviewed logs are publishable
+# Private captures and logs
 raw-logs/
 unsanitized/
 private-captures/
-docs/CLAUDE-47M-TOKEN-AUDIT.md
-docs/publication-review.md
 *.pcap
 *.pcapng
 *.log
@@ -80,8 +69,9 @@ temp/
 extracted/
 rootfs/
 firmware/
-*owner.json
-*Telldus.conf
+owner.json
+*-owner.json
+Telldus.conf
 *.sqlite*
 tests/local-https.*/
 tests/tls-probe.*/

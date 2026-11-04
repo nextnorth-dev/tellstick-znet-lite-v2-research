@@ -1,6 +1,12 @@
 # Z-Wave paths in stock firmware 1.3.2
 
-This document concerns the application code in the official 1.3.2 image. The existing [hardware study](zwave.md) covers the controller and serial interface. Physical inclusion, a `nodeAdded` callback, a button-origin state change, and On/Off of one connected test load were later observed on an owned gateway. These observations do not verify exclusion, all node types, or general radio reliability.
+The official 1.3.2 application exposes generic Z-Wave device operations but
+not a complete local administration API. On one owned gateway, inclusion
+produced a captured `nodeAdded` callback and a physical-button state change
+was recorded. On/Off switching of one connected load was an
+**OWNER-REPORTED PHYSICAL OBSERVATION**. Exclusion, other node types, and
+general radio reliability remain unverified. The [hardware study](zwave.md)
+covers the controller and serial interface.
 
 ## Controller and devices
 
@@ -15,7 +21,7 @@ The firmware has internal controller methods for inclusion, exclusion, and other
 | Capability | Evidence in code | Offline execution | Physical test | Existing local HTTP support |
 | --- | --- | --- | --- | --- |
 | Controller startup and node discovery | STATIC CODE VERIFIED | Imports only | Host interface/version notice and one physical inclusion with `nodeAdded` callback RUNTIME VERIFIED | Partial device listing |
-| Generic node on/off/up | STATIC CODE VERIFIED | VERIFIED IN EMULATION ONLY with a fake node | On/Off observed for one connected test load through an experimental local-control path; other methods and models NOT YET VERIFIED | Generic device operations |
+| Generic node on/off/up | STATIC CODE VERIFIED | VERIFIED IN EMULATION ONLY with a fake node | On/Off of one connected test load through an experimental local-control path **OWNER-REPORTED PHYSICAL OBSERVATION**; other methods and models NOT YET VERIFIED | Generic device operations |
 | Inclusion and exclusion | STATIC CODE VERIFIED | VERIFIED IN EMULATION ONLY with a fake message sink | Inclusion RUNTIME VERIFIED on one owned gateway; exclusion NOT YET VERIFIED | No complete stock local admin surface |
 | Association management | STATIC CODE VERIFIED in internal components | NOT YET VERIFIED | NOT YET VERIFIED | No reviewed local admin route |
 | Existing network preservation | Settings and controller paths identified | NOT YET VERIFIED | NOT YET VERIFIED | Not applicable |

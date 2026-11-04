@@ -189,38 +189,6 @@ Note: The wireless configuration may contain SSIDs and authentication credential
 
 These commands are provided as inspection references. They are not represented as a complete verbatim transcript of the original test session.
 
-## Why Was Wi-Fi Not Advertised?
-
-The exact reason Wi-Fi was not exposed as a supported end-user feature is unknown.
-
-Several explanations are technically plausible.
-
-### Platform Reuse
-
-The AR933x platform integrates networking and wireless capabilities. Selecting the SoC for its processing, Ethernet, USB, and OpenWrt ecosystem could also provide Wi-Fi hardware without requiring a separate wireless chipset.
-
-### Provisioning and Support
-
-Ethernet avoids the need for wireless credential setup, network discovery, reconnect handling, and customer troubleshooting.
-
-For a home automation gateway intended to remain continuously connected, this may have simplified installation and support.
-
-### Product Validation
-
-A functioning wireless interface does not necessarily mean the manufacturer validated it for every supported operating condition.
-
-Wireless range, coexistence, reconnection behavior, antenna performance, and regulatory requirements may influence whether a capability becomes an officially supported product feature.
-
-### Radio Coexistence
-
-The gateway also contains RF433 and Z-Wave hardware.
-
-However, there is no direct evidence from this investigation that radio interference was the reason Wi-Fi was not offered as a supported feature.
-
-The successful connection test demonstrates that the wireless interface can operate, but it does not establish comprehensive radio coexistence performance.
-
-None of these explanations should be interpreted as a confirmed statement of Telldus’s design decisions.
-
 ## Findings and Limitations
 
 | Observation | Evidence | Result |
@@ -239,24 +207,6 @@ None of these explanations should be interpreted as a confirmed statement of Tel
 
 ## Security and Privacy
 
-The published boot-log excerpts preserve the original kernel timestamps, device names, driver identifiers, and hardware information.
-
-Network-specific details have been omitted from the functional test documentation.
-
-No wireless credentials, personal identifiers, MAC addresses, BSSIDs, or private IP addresses are published.
-
-No firmware image or hardware-specific calibration data is included.
-
-## Conclusion
-
-The Telldus TellStick ZNet Lite V2 contains an integrated Atheros 2.4 GHz Wi-Fi interface that is recognized by the stock Linux firmware.
-
-The interface was not only detected: it successfully scanned for access points, associated using WPA2, obtained an IP address through DHCP, and carried network traffic.
-
-The tested device therefore has functional Wi-Fi capability beyond its commonly documented Ethernet connectivity.
-
-This finding is limited to the examined hardware and firmware configuration. It does not imply official manufacturer support or guarantee equivalent behavior on every TellStick ZNet Lite V2.
-
-Independent hardware and firmware research. Not affiliated with or endorsed by Telldus.
-
-Original documentation is licensed under CC BY 4.0 unless otherwise noted.
+The published excerpts preserve kernel timestamps and hardware identifiers.
+Wireless credentials, MAC addresses, BSSIDs, private addresses, firmware
+images, and calibration data are not included.

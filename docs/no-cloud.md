@@ -1,9 +1,7 @@
 # Local access and network-isolation research
 
-This research asks which TellStick ZNet Lite V2 functions can use the stock
-local interfaces without Telldus Live, and what an experimental owner-control
-path changes. It is not a supported Live replacement or a released product.
-The physical results below are limited to one modified firmware 1.3.2 gateway.
+The results below cover stock local interfaces and selected LocalOwner paths
+on one modified firmware 1.3.2 gateway.
 
 ## What stock firmware exposes
 
@@ -60,7 +58,3 @@ matrix](../HARDWARE_VERIFICATION.md) and [evidence register](evidence-status.md)
 - General Z-Wave command delivery, exclusion, association management,
   controller-NVM backup/recovery, and radio behavior under egress isolation.
 - Recovery from failure of the experimental overlay.
-
-The LocalOwner product integration is planned separately in OpenTZnet and is
-not complete. OpenTZnet Lite is a separate project and is not distributed from
-this research repository.

@@ -1,14 +1,12 @@
 # TellStick ZNet Lite V2 research
 
-Independent hardware and firmware research on the Telldus TellStick ZNet Lite
-V2, centered on official firmware 1.3.2. The work combines static analysis of
-the vendor image with bounded tests on an owned device. It is not affiliated
-with Telldus.
+Hardware and firmware research on the Telldus TellStick ZNet Lite V2, focused
+on firmware 1.3.2. The findings combine static analysis of the vendor image
+with bounded tests on an owned device. This project is independent of Telldus.
 
-> **Research only.** This repository documents observations and experimental
-> prototypes; it is not a firmware distribution, supported installation, or
-> released product. No firmware image, flash dump, credential, private key, or
-> device-specific configuration is distributed here.
+This is a research repository, not a firmware distribution or supported
+installation. It contains no firmware images, flash dumps, credentials,
+private keys, or device-specific configuration.
 
 ## What the evidence supports
 
@@ -62,19 +60,6 @@ behavior.
 - [Local access and network isolation](docs/no-cloud.md)
 - [Security review](SECURITY_STATIC_REVIEW.md) and [test methods/results](docs/testing.md)
 
-## Research boundaries
-
-The official 1.3.2 image is an analysis reference, not a distributed artifact.
-Firmware update, bootloader, and recovery findings are described in
-[firmware](docs/firmware.md) and [update and recovery](docs/update-and-recovery.md).
-No recovery procedure is
-claimed as tested unless the evidence says so.
-
-The LocalOwner material in this repository is experimental research, not a
-released product. OpenTZnet Lite and the future LocalOwner product integration
-are separate development tracks and are not release deliverables of this
-Research repository.
-
 ## Documentation
 
 - [Evidence status](docs/evidence-status.md) — claim labels and evidence limits
@@ -85,19 +70,17 @@ Research repository.
 - [Testing](docs/testing.md) and [references](docs/references.md)
 - [Security policy](SECURITY.md)
 
-## Safety and scope
+## Scope and safety
 
 Firmware modification and direct flash access can damage a device or erase its
-configuration. Findings apply only to the examined hardware and firmware
-unless stated otherwise. Tests were limited to owned or explicitly authorized
-equipment. Proprietary firmware, extracted root filesystems, credentials,
-private keys, raw private captures, and device-specific configuration are not
-included.
+configuration. Findings apply to the examined hardware and firmware unless
+stated otherwise; tests used owned or explicitly authorized equipment. No
+recovery procedure is claimed as tested unless the evidence says so. Report
+sensitive issues privately as described in [SECURITY.md](SECURITY.md).
 
-This repository is for research and interoperability. It does not provide
-security patches, installation support, or a guarantee of compatibility or
-recovery. Report sensitive issues privately as described in
-[SECURITY.md](SECURITY.md).
+The LocalOwner material is experimental research. OpenTZnet Lite and the
+LocalOwner product integration are separate development tracks and are not
+released from this repository.
 
 ## Attribution and license
 

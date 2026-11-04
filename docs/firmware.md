@@ -2,17 +2,10 @@
 
 [Documentation index](../README.md#documentation)
 
-## Overview
-
-The Telldus TellStick ZNet Lite V2 runs a customized OpenWrt-based Linux firmware on an Atheros AR933x embedded platform.
-
-The firmware includes a U-Boot bootloader, Linux kernel, compressed root filesystem, persistent writable storage, hardware drivers, Python-based application services, radio-controller interfaces, and firmware upgrade components.
-
-This document covers the firmware environment observed on a TellStick ZNet Lite V2 running stock firmware version 1.3.2.
-
-The earlier investigation used serial console access, Linux shell inspection, captured boot messages, and filesystem examination. A complete 16 MiB private flash backup was subsequently located outside this repository and compared with selected official 1.3.2 firmware regions. Restoration from that backup has not been tested.
-
-The objective is to document the firmware architecture, identify its major components, and distinguish confirmed behavior from areas requiring further analysis.
+Firmware 1.3.2 on the examined TellStick ZNet Lite V2 runs OpenWrt on an
+Atheros AR933x platform. The findings below come from serial console, Linux
+inspection, captured boot messages, and filesystem analysis; the full flash
+backup and extracted filesystem are not distributed.
 
 ## Firmware Identification
 
@@ -508,20 +501,10 @@ Selected technical observations, sanitized logs and independently authored docum
 | Integrated Wi-Fi | Functional | Tested |
 | Remote-support package | Installed | Confirmed |
 | Embedded SSH private key | Identified | Confirmed |
-| Full flash backup | Private 16 MiB artifact located; selected MTD/firmware regions compared bytewise | Artifact RUNTIME VERIFIED as an older physical dump; restore NOT YET VERIFIED |
+| Full flash backup | Selected MTD/firmware regions, including the SquashFS payload, matched bytewise against official 1.3.2 | Restore NOT YET VERIFIED |
 | Complete firmware upgrade trust model | Not fully established | Further research |
 | Reproducible firmware build | Not established | Further research |
 | All hardware revisions | Not tested | Unknown |
-
-## Research Significance
-
-The TellStick ZNet Lite V2 firmware contains a relatively complete embedded Linux environment with accessible diagnostics, identifiable internal services and modular Python applications.
-
-The combination of U-Boot, OpenWrt, SquashFS/JFFS2 storage, USB-connected radio controllers and integrated Wi-Fi provides multiple opportunities for independent interoperability and hardware research.
-
-The firmware also contains components that merit security review, particularly the remote-support authentication material and the firmware upgrade mechanism.
-
-The evidence presented here establishes the existence and basic architecture of those components without making unsupported claims about manufacturer infrastructure, authentication bypasses or update-validation weaknesses.
 
 ## Related Documentation
 
@@ -529,15 +512,3 @@ The evidence presented here establishes the existence and basic architecture of 
 - [UART Console and U-Boot](uart-and-uboot.md)
 - [Undocumented Wi-Fi](undocumented-wifi.md)
 - [Remote Support Architecture](remote-support.md)
-
-## License and Disclaimer
-
-This document contains independent research performed on personally owned hardware.
-
-It is not affiliated with, sponsored by or endorsed by Telldus.
-
-Original documentation is licensed under Creative Commons Attribution 4.0 International (CC BY 4.0), unless otherwise noted.
-
-Third-party firmware, proprietary source code, private credentials and device-specific calibration data are excluded from that license.
-
-Telldus and TellStick are trademarks of their respective owners.

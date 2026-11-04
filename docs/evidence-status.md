@@ -1,6 +1,8 @@
 # Evidence classes and status register
 
-This page is the single place that states how strongly each research claim is supported. Detailed observations stay in the topic pages and in [HARDWARE_VERIFICATION.md](../HARDWARE_VERIFICATION.md); this page does not repeat them. Where a claim has no local evidence, the gap is stated instead of filled.
+These labels describe the evidence behind each claim. Detailed observations
+are in the topic pages and the [physical verification matrix](../HARDWARE_VERIFICATION.md).
+Unresolved claims are marked as such.
 
 ## Evidence classes
 
@@ -39,7 +41,7 @@ A hash match identifies an artifact; it is not a signature, provenance proof, or
 | Embedded RemoteSupport SSH private key present in the firmware | **STATIC CODE VERIFIED** | Key not reproduced; no third-party infrastructure was contacted. See [remote support](remote-support.md). |
 | Initial privileged access from factory-locked stock | **NOT ESTABLISHED** | The bounded tests documented in [authentication](authentication.md) do not demonstrate a supported initial privileged-access path and do not prove that no vulnerability exists. |
 
-### Experimental local control (not a product release)
+### Experimental local control
 
 | Claim | Status | Basis and limit |
 | --- | --- | --- |
@@ -51,11 +53,3 @@ A hash match identifies an artifact; it is not a signature, provenance proof, or
 | Z-Wave `isFailed` semantics | Code path **STATIC CODE VERIFIED**; late-callback overwrite **HYPOTHESIS** | `failed=True` must not be read as unreachable. |
 | Home Assistant integration experiment | Token flow, selected reads, and entity creation **RUNTIME VERIFIED**; test-plug On **OWNER-REPORTED PHYSICAL OBSERVATION** | Polling stock API state reads is implemented; sustained polling behavior, callback forwarding, connected-device Off delivery, and complete bidirectional synchronization **NOT YET VERIFIED**. |
 | `sensorValueUpdated` callback | **RUNTIME VERIFIED** with controlled simulated input in the production daemon | No RF was emitted and no persistent sensor reading was created. Physical sensor-origin input and sensor-to-MQTT delivery are **NOT YET VERIFIED / NOT IMPLEMENTED**. See [hardware verification](../HARDWARE_VERIFICATION.md) and [testing](testing.md). |
-
-## Project boundary
-
-OpenTZnet Lite and the future LocalOwner product integration are separate
-development tracks and are not releases of this Research repository. The
-LocalOwner entries above describe experimental research observed on one
-modified gateway; they do not establish product readiness, general support,
-or release status.

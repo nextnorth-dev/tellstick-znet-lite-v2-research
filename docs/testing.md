@@ -1,12 +1,10 @@
 # Test methods and results
 
-This page separates static inspection, emulation, and physical observations.
-The physical results are from one owned TellStick ZNet Lite V2 running
-firmware 1.3.2, with LocalOwner research active on a modified gateway. They
-are not results from an untouched-stock installation and do not establish
-general product readiness.
+Physical results are from one owned TellStick ZNet Lite V2 running firmware
+1.3.2 with the LocalOwner prototype active on a modified gateway. They do not
+establish behavior on an untouched-stock installation.
 
-## Physical follow-up
+## Hardware tests
 
 Targeted tests observed the stock UDP 30303 discovery response, UDP 42314
 listener registration and version notice, and rejection of anonymous API
@@ -40,11 +38,9 @@ individual limits are recorded in the
 
 ## Offline and emulated tests
 
-The results below were recorded on 2026-10-24 and 2026-10-25 against the
-official firmware 1.3.2 image. They are historical results, not a claim that
-the current documentation-only update reran them or that CI reproduces them
-from a fresh checkout. The vendor image, extracted root filesystem, and MIPS
-emulator are not distributed here.
+These results were recorded on 2026-10-24 and 2026-10-25 against official
+firmware 1.3.2. The image, extracted root filesystem, and MIPS emulator are
+not included.
 
 | Test | Code exercised | Recorded result | Limit |
 | --- | --- | --- | --- |
@@ -58,7 +54,7 @@ emulator are not distributed here.
 | Stock `system/info` authorization | [`test_original_system_info_http.py`](../tests/test_original_system_info_http.py), original CherryPy/API modules over loopback HTTP | 6/6 PASS | Valid case uses synthetic board values |
 | Vendor upgrade verifier | [`test_stock_upgrade_verification.py`](../tests/test_stock_upgrade_verification.py), original `tellstick-upgrade.py:verifyFile` | 4/4 PASS | GPG subprocess mocked; no vendor signature or flash tested |
 | UDP 42314 parser/listener | [`test_udp42314_original_offline.py`](../tests/test_udp42314_original_offline.py) | 7/7 PASS | Fake sockets; no serial/radio hardware |
-| UDP 42314 private queue/loopback checks | Original handler, protocol, message, adapter queue, and UDP server | 9/9 PASS | Private harness; mock queue and loopback only |
+| UDP 42314 queue/loopback checks | Original handler, protocol, message, adapter queue, and UDP server | 9/9 PASS | Separate offline harness not included; mock queue and loopback only |
 
 The isolated integration cases covered owner login, rate limiting, CSRF,
 session expiry/logout, synthetic JWT cases, and stock API routes. The
@@ -68,11 +64,10 @@ from an earlier phase applies stricter validation than the original firmware;
 it does not establish that the firmware rejects the same input. A ready-made
 radio-command sender is intentionally not published.
 
-The tests under [`tests/`](../tests/) that use original firmware modules
-require a separately obtained official image, an extracted root filesystem,
-and a compatible user-mode MIPS Python runner. They are offline research
-harnesses, not device installers. Emulated command acceptance, adapter queue
-activity, or HTTP success alone does not prove radio delivery.
+Tests under [`tests/`](../tests/) that use original firmware modules require
+a separately obtained official image, extracted root filesystem, and
+compatible user-mode MIPS Python runner. Emulated command acceptance,
+adapter-queue activity, or HTTP success does not prove radio delivery.
 
 Example offline invocation, with external paths kept outside the checkout:
 
