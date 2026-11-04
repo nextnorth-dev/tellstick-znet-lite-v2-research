@@ -1,31 +1,50 @@
-# Authentication and the local-owner prototype
+# Authentication in TellStick ZNet Lite V2 firmware 1.3.2
 
-The stock firmware has a local JWT-protected HTTP API, but approval of a new token is coupled to Telldus Live OpenID. `api.ApiManager` accepts a local token request and later issues or renews JWTs; `web.base.Server` protects the approval page with a web session. In the examined image, the stock `tellduslive.web.WebRequestHandler` is the authentication provider for that session. Its OpenID flow checks the returned email against the device's registered account. This dependency is in token **approval**, not in every API request made with an already valid token. These are STATIC CODE VERIFIED paths, not proof that every device function is cloud-independent in operation.
+The examined stock firmware exposes a local HTTP API protected by signed JWTs.
+The stock web approval flow for a new token depends on Telldus Live OpenID;
+this is an approval dependency, not a requirement on every request made with
+an already valid token. These are findings about firmware 1.3.2, not a claim
+that every device operation can be performed offline.
 
-JWT signatures are made with a device-generated API token key. Device-specific material protects the stored key but is not itself the JWT signing key. This distinction matters for both threat analysis and local integration design. The prototype uses the firmware's existing `ApiManager` token object, JWT signing, validation, and renewal; it does not disclose or replace the signing key.
+## Token and API behavior
 
-### What an unauthenticated system request returns
+`api.ApiManager` accepts token requests and issues or renews JWTs.
+`web.base.Server` uses a web session for the approval interface. In the
+examined image, `tellduslive.web.WebRequestHandler` checks the returned OpenID
+identity against the device's registered account.
 
-`web.base.Server.RequestHandler` routes `/api/system/info` to `api.ApiManager.handleRequest`. `ApiManager.requireAuthentication()` returns `False` for this path, which skips the **web session** provider, not the API token checks. `WebRequest.header()` returns `None` for a missing header. `ApiManager.handleRequest` returns 401 for a missing header, an empty header, a value without the exact `Bearer ` prefix, a malformed JWT, or an expired JWT. The stock token generator places `aud` and `exp` in the signed JWT header; the API checks them after signature validation. A valid JWT reaches `telldus.DeviceApiManager.systemInfo` and returns 200 when board data is available. These paths were exercised over loopback HTTP with the original CherryPy/API bytecode: [six regression cases](../tests/test_original_system_info_http.py) passed. Later physical requests confirmed 401 for missing Bearer credentials on selected API routes; valid JWT use on the gateway remains untested.
+For `/api/system/info`, the server may skip web-session authentication while
+still requiring a valid API token. Loopback tests using the original API and
+CherryPy modules exercised missing, empty, malformed, expired, and valid
+synthetic token cases. The unauthenticated cases returned 401. On one modified
+test gateway, an experimental local-owner configuration obtained a stock JWT
+and used selected system, device, and sensor read routes. This verifies those
+requests only; stock OpenID account login and untouched-stock token approval
+were not tested.
 
-This endpoint does not use 403 for those six authentication cases. In the examined `ApiManager`, 403 belongs to other operations, including polling an unapproved pending token and trying to renew a token without renewal permission. The distinction prevents a 401 response from being mistaken for a failed web-session login.
+The firmware generates JWT signatures with its API token key. Device-specific
+material protects the stored key but is not itself the signing key. Neither
+key material nor credentials are included here.
 
-## Public Telldus login and TLS observations
+## OpenID and transport limits
 
-The original web startup uses HTTP and does not configure a Secure session cookie. Targeted requests to an owned physical gateway returned an anonymous `session_id` cookie with `HttpOnly`, without `Secure` or `SameSite`; cookie values were not retained. Its OpenID discovery starts at an HTTP URL, while the browser carries redirects and the local callback. Those are separate connections and possible failure points. During the 2026-10-24 offline investigation, public HTTP and HTTPS OpenID discovery responded. The actual firmware MIPS Python 2.7/Requests/OpenSSL stack completed a certificate-verified HTTPS GET to the public discovery endpoint. Therefore an obsolete TLS stack is **not established** as the cause of intermittent owner login. A full account login, callback, authenticated cookie exchange, and clock-dependent OpenID verification were not tested.
+The examined Telldus login path uses OpenID discovery and a browser
+redirect/callback. A certificate-verified HTTPS request to the discovery
+endpoint succeeded using the firmware's Python 2.7 stack. A complete account
+login, callback, authenticated-cookie exchange, and clock-dependent
+verification were not tested. This research does not claim a general OAuth
+flow.
 
-## Prototype boundary
+The original web startup uses HTTP and does not configure a Secure session
+cookie. An anonymous session cookie was observed on the owned test gateway
+with `HttpOnly`, but without `Secure` or `SameSite`; its value was not retained.
+These observations apply to the tested firmware and routes only.
 
-The independently written [`LocalOwnerAuth`](../prototype/localowner/LocalOwnerAuth.py) implements the stock `IWebRequestAuthenticationHandler` and `IWebRequestHandler` interfaces in Python 2.7. It accepts no default password. An owner verifier is salted PBKDF2-HMAC-SHA256, stored in an owner-only file. Login is rate-limited; successful login rotates the CherryPy session; local sessions expire after 30 minutes. Login, approval, and logout forms use session-bound CSRF tokens. The local provider refuses to authorize the stock approval POST using only a local session.
+## Experimental local-control research
 
-The proposed [`LocalHttpsServer`](../prototype/localowner/LocalHttpsServer.py) reuses the firmware's CherryPy router and API plugins while requiring a certificate and private key. The test server listened only on loopback and rejected plaintext HTTP on its TLS port. A browser must still trust a certificate valid for the gateway address in a future installation. Merely switching the listener to HTTPS would not make the product safe if another HTTP route remained reachable.
-
-In the prototype flow, the local owner approves an existing pending token request. The prototype changes only the approval URL in a successful HTTPS `PUT /api/token` response to point to its local approval page. A browser without an owner session is sent through local login and back to that request. The original `ApiManager` then issues the JWT and handles renewal. VERIFIED IN EMULATION ONLY: the original Python 2.7 runtime, CherryPy 3.7, and API/JWT modules completed this sequence over loopback HTTPS with synthetic credentials and devices. The original Telldus Live provider remained importable. See [testing](testing.md) for exact coverage.
-
-This remains an **offline prototype**. The compatibility change is active only when the local plugin is loaded and the request uses HTTPS; stock firmware remains unchanged. The stock approval page also has its own CSRF behavior, beyond the new provider's protection. Anonymous session-cookie attributes were observed on physical hardware; authenticated session behavior, certificate provisioning, and the absence of an alternate HTTP path need verification before deployment. No installation of this local-owner prototype or owner login on a real gateway has been performed.
-
-The stock `web.base.Server.WebRequestHandler.isUrlAuthorized()` accepts a `True` result from **any** registered web-authentication provider. The local provider's refusal to authorize stock `/api/authorize` POST therefore does not veto a separate Telldus Live session. A final local-only mode must explicitly close or harden the stock approval route rather than assuming the local provider's CSRF check protects every approval path. This is a STATIC CODE VERIFIED routing condition; no account or physical session was used to test it.
-
-An additional loopback HTTPS run registered the local web provider **without** the Telldus Live web-authentication provider. The local login, approval, JWT, and API flow passed, while a local owner session received a redirect instead of approving through stock `/api/authorize` POST. This demonstrates one narrower startup configuration in emulation; it does not establish that removing the Live web provider leaves every gateway or radio behavior unaffected. The Live backend and Z-Wave callbacks must be assessed separately before changing a real startup file.
-
-The pending token table is held in the stock `ApiManager` instance. A separate process cannot approve requests received by the original process without changing that contract. The practical local-owner option therefore loads the provider in the same process and retains the original JWT issuing and validation functions. See [update and recovery paths](update-and-recovery.md) for the deployment implications.
+The repository includes an experimental LocalOwner prototype that was used
+for limited tests on one modified firmware 1.3.2 gateway. It retains the stock
+token issuer; selected login, approval, JWT, and read operations were observed
+on that gateway. This is research evidence, not a supported installation,
+security review, or product release. See the [physical verification matrix](../HARDWARE_VERIFICATION.md)
+and [evidence register](evidence-status.md) for scope and limitations.

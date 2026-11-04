@@ -95,14 +95,8 @@ The file identification command returned:
 usr/lib/python2.7/site-packages/remotesupport/id_rsa: PEM RSA private key
 ```
 
-Inspection of the file header confirmed the expected RSA private-key container format:
-
-```text
------BEGIN RSA PRIVATE KEY-----
-[PRIVATE KEY MATERIAL OMITTED]
-```
-
-The private-key contents are deliberately excluded from this repository.
+The file was identified as an RSA private-key container. Neither its contents
+nor a copy of the key is included in this repository.
 
 ### Significance
 

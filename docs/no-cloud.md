@@ -1,36 +1,66 @@
-# No-cloud status and deployment limits
+# Local access and network-isolation research
 
-This project is investigating a path that retains the stock 1.3.2 firmware and its local radio stack while removing Telldus Live as a prerequisite for ordinary owner access. It is not currently an installable firmware patch or a complete Home Assistant integration.
+This research asks which TellStick ZNet Lite V2 functions can use the stock
+local interfaces without Telldus Live, and what an experimental owner-control
+path changes. It is not a supported Live replacement or a released product.
+The physical results below are limited to one modified firmware 1.3.2 gateway.
 
-## Options compared
+## What stock firmware exposes
 
-| Route | What it preserves | Main gap | Assessment |
-| --- | --- | --- | --- |
-| Existing stock JWT | Original API, RF433, and Z-Wave stack | New approval still depends on Telldus Live; stock transport is HTTP | Useful only where a valid token already exists; not durable onboarding |
-| Local owner plugin in the stock process, staged through overlay | Original token table, JWT/API, and radio stack | Owner-login transport, authenticated route isolation, upgrade persistence, and rollback | Candidate integration after the remaining gates; the local-owner prototype itself is not installed |
-| Shadow or modify stock auth/web modules | Original operating system and radios | Larger version-specific patch surface and the same transport/recovery gates | Possible, but no advantage established over the plugin |
-| Repackaged stock firmware | Existing application if licensing and integration permit | Vendor update signature, image format, full-flash risk, recovery, redistribution rights | Research option; not needed for the demonstrated local approval flow |
-| New OpenWrt-based firmware | Potentially modern operating-system stack | Board port, 16 MB/64 MB limits, radio protocols, state migration, and recovery | Long-term separate project; not yet validated for this board |
+The stock application has a local HTTP API protected by signed JWTs, RF433
+event/command paths, and internal Z-Wave controller code. The stock new-token
+approval flow depends on Telldus Live OpenID. A valid JWT can be used on some
+local API operations, but the existence of a local interface does not establish
+that onboarding, every device operation, or event delivery works without the
+cloud.
 
-The approval compatibility fix already redirects successful HTTPS token requests to the local page while leaving the stock issuer intact. A second independent process cannot use the pending requests stored in the stock process's `ApiManager.tokens`. An overlay that loads the local plugin in that process is therefore more direct than a sidecar. A loopback test also passed with the Live **web-authentication** provider omitted and rejected stock approval through a local session; it did not remove or validate the Live backend used elsewhere in the application. The overlay is a filesystem change, but it does **not** require replacing the SquashFS firmware image. For firmware-update and preservation details, see [update and recovery paths](update-and-recovery.md).
+UDP 42314 accepts a listener registration and keeps one event-recipient
+address. A later registration replaces it. The examined handler has no
+authentication, per-client ownership, or application-level delivery
+acknowledgement; RF433 event reception and command delivery were not verified
+through this service. See [UDP 42314](udp-42314.md).
 
-## What the evidence supports
+## Experimental local-owner observations
 
-- **STATIC CODE VERIFIED:** The firmware has local RF433 event/command handling, a token-protected HTTP API, and internal Z-Wave controller code. Some API dispatch paths do not make a cloud call when a valid local token already exists.
-- **VERIFIED IN EMULATION ONLY:** Original MIPS Python 2.7, CherryPy, and JWT/API modules worked with a new local-owner provider using synthetic settings and devices. A generic HTTP device operation and selected Z-Wave commands used mocked adapters or queues.
-- **RUNTIME VERIFIED:** An owned gateway answered local discovery and UDP registration, rejected anonymous HTTP API requests, and loaded a separate signed MQTT plugin on normal daemon starts. A temporary observer received a deliberately simulated sensor callback inside the daemon.
-- **NOT YET VERIFIED:** The local-owner prototype on hardware, authenticated API behavior, and physical Z-Wave node operations. Physical RF-origin sensor input was outside the scope of the runtime callback test because no compatible sensor was available. Sensor-to-MQTT forwarding is not yet implemented or tested. See the [physical verification matrix](../HARDWARE_VERIFICATION.md).
+An experimental LocalOwner overlay was exercised on one modified 1.3.2
+gateway. The following selected paths were observed physically:
 
-The local web prototype displays synthetic system information, devices, and sensors through the stock HTTP API and can request an API token. Its UI is not a proven replacement for Telldus Live. See [authentication](authentication.md) and [testing](testing.md).
+- Local HTTPS login, local approval of a pending stock token, stock JWT
+  issuance, and authenticated system, device, and sensor reads.
+- A cold boot with temporary IPv4 egress-block rules on both active network
+  interfaces. Local login, token approval, JWT issuance, selected API reads,
+  and dashboard access succeeded during that single test.
+- Z-Wave inclusion through the stock controller, a captured `nodeAdded`
+  callback, node appearance in the stock API after daemon restart, and a
+  captured physical-button-origin state change. On/Off switching of one
+  connected test load was an **OWNER-REPORTED PHYSICAL OBSERVATION**.
+- WMR-252-specific RF433 control with pairing indication and On/Off of its
+  connected load (**OWNER-REPORTED PHYSICAL OBSERVATION**). This does not
+  establish general pairing or receiver-origin state feedback.
 
-For an initial local RF433-only use case, [UDP 42314](udp-42314.md) and the existing R00S integration provide a narrower route that does not require JWT in the examined firmware handler. The recommended general architecture is the **in-process LocalOwner overlay for HTTPS token issuance and the stock HTTP API**, with one coordinated 42314 event recipient where RF433 events are needed. Keep device state verification in the client: neither a successful HTTP handler return against a mock nor a queued UDP command proves radio delivery. Z-Wave discovery and generic device commands have local code paths, but complete inclusion/exclusion and status callbacks need separate local interfaces and physical validation. Firmware replacement is not required for the demonstrated token workflow; [update and recovery constraints](update-and-recovery.md) still make installation NO-GO.
+These are narrowly scoped results, not compatibility guarantees. The
+dashboard and LocalOwner code remain experimental research. The owner-control
+path has not had an independent security review or an untouched-stock
+installation and rollback rehearsal. See the [physical verification
+matrix](../HARDWARE_VERIFICATION.md) and [evidence register](evidence-status.md).
 
-## What still prevents a supported installation
+## What remains unverified
 
-1. **Token approval compatibility and route isolation.** The stock response points to the original OpenID route. The local plugin now rewrites that approval URL only for successful HTTPS token requests; offline login/approval tests pass. Because the stock web router accepts any registered authentication provider, a local provider alone cannot veto stock approval through a separate Live session. A local-only release must close or harden that old route, then retest third-party clients and the physical deployment.
-2. **Transport.** The test server used TLS on loopback, but the stock firewall does not open the proposed HTTPS port. A trustworthy certificate for the gateway address, a deliberately scoped network rule, and proof that no alternate HTTP login path bypasses protection are required.
-3. **Overlay and rollback.** Root SSH, the plugin import/startup path, and restart persistence of a separate MQTT test plugin are physically verified. Free-space margins, the local-owner prototype's startup behavior, recovery from its failure, and persistence through a firmware update remain untested. No public installer is supplied.
-4. **Device data and RF433.** The existing [R00S local integration](references.md) offers a practical RF433 baseline; its model and event coverage must be checked against an owned unit. The stock UDP listener permits only one registered receiver. Radio delivery and state synchronization remain untested in this research phase.
-5. **Z-Wave administration.** Local controller and generic node command code exists, but inclusion, exclusion, association management, and callbacks lack a reviewed local administrative API. Existing network state must be preserved. No physical Z-Wave procedure has been attempted.
+- Universal or long-duration absence of outbound traffic, IPv6 isolation, and
+  repeatability across boots or devices.
+- A complete stock Telldus Live account login and callback sequence.
+- RF433 sensor-origin events, generic pairing across device models, and
+  receiver-origin state feedback.
+- Sensor-to-MQTT forwarding. A `sensorValueUpdated` callback was exercised in
+  the production daemon using simulated input only; no RF was emitted and no
+  persistent sensor reading was created.
+- Home Assistant's stock-API state polling is implemented, but sustained
+  polling behavior, callback forwarding, and complete bidirectional
+  synchronization have not been fully verified.
+- General Z-Wave command delivery, exclusion, association management,
+  controller-NVM backup/recovery, and radio behavior under egress isolation.
+- Recovery from failure of the experimental overlay.
 
-The device identity, basic network exposure, root access, and signed plugin startup have now been checked on an owned gateway. The next local-owner step is to close the remaining TLS, authenticated route, persistence, and rollback gates before installing that separate prototype. The `sensorValueUpdated` callback path is **RUNTIME VERIFIED** in the production daemon using controlled simulated sensor input. A compatible physical sensor was not available, so physical RF-origin input was outside the scope of this test. Sensor-to-MQTT forwarding remains unimplemented and untested.
+The LocalOwner product integration is planned separately in OpenTZnet and is
+not complete. OpenTZnet Lite is a separate project and is not distributed from
+this research repository.

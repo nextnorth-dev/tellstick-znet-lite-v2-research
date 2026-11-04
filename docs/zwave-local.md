@@ -1,6 +1,6 @@
 # Z-Wave paths in stock firmware 1.3.2
 
-This document concerns the application code in the official 1.3.2 image. The existing [hardware study](zwave.md) covers the controller and serial interface. Later targeted tests on an owned gateway confirmed the host serial interface and a UDP version notice from the controller path. No Z-Wave node transition, command response, or no-cloud administrative behavior below has been verified on a physical radio network.
+This document concerns the application code in the official 1.3.2 image. The existing [hardware study](zwave.md) covers the controller and serial interface. Physical inclusion, a `nodeAdded` callback, a button-origin state change, and On/Off of one connected test load were later observed on an owned gateway. These observations do not verify exclusion, all node types, or general radio reliability.
 
 ## Controller and devices
 
@@ -10,13 +10,13 @@ The generic HTTP device API reaches `DeviceNode` for known nodes. That class map
 
 ## Administration gap
 
-The firmware has internal controller methods for inclusion, exclusion, and other administration. Selected operations are wired through Telldus Live handlers, while the 18 examined local HTTP API calls do not expose a complete local administrative surface. **VERIFIED IN EMULATION ONLY:** original controller code queued inclusion and exclusion requests to a fake message sink. The callback path and actual network transitions were not tested.
+The firmware has internal controller methods for inclusion, exclusion, and other administration. Selected operations are wired through Telldus Live handlers, while the 18 examined stock local HTTP API calls do not expose a complete local administrative surface. **VERIFIED IN EMULATION ONLY:** original controller code queued inclusion and exclusion requests to a fake message sink. Later physical research verified one inclusion and `nodeAdded` callback through a separate experimental local-control path; physical exclusion remains untested.
 
 | Capability | Evidence in code | Offline execution | Physical test | Existing local HTTP support |
 | --- | --- | --- | --- | --- |
-| Controller startup and node discovery | STATIC CODE VERIFIED | Imports only | Host interface/version notice RUNTIME VERIFIED; node discovery NOT YET VERIFIED | Partial device listing |
-| Generic node on/off/up | STATIC CODE VERIFIED | VERIFIED IN EMULATION ONLY with a fake node | NOT YET VERIFIED | Generic device operations |
-| Inclusion and exclusion | STATIC CODE VERIFIED | VERIFIED IN EMULATION ONLY with a fake message sink | NOT YET VERIFIED | No reviewed local admin route |
+| Controller startup and node discovery | STATIC CODE VERIFIED | Imports only | Host interface/version notice and one physical inclusion with `nodeAdded` callback RUNTIME VERIFIED | Partial device listing |
+| Generic node on/off/up | STATIC CODE VERIFIED | VERIFIED IN EMULATION ONLY with a fake node | On/Off observed for one connected test load through an experimental local-control path; other methods and models NOT YET VERIFIED | Generic device operations |
+| Inclusion and exclusion | STATIC CODE VERIFIED | VERIFIED IN EMULATION ONLY with a fake message sink | Inclusion RUNTIME VERIFIED on one owned gateway; exclusion NOT YET VERIFIED | No complete stock local admin surface |
 | Association management | STATIC CODE VERIFIED in internal components | NOT YET VERIFIED | NOT YET VERIFIED | No reviewed local admin route |
 | Existing network preservation | Settings and controller paths identified | NOT YET VERIFIED | NOT YET VERIFIED | Not applicable |
 | Full cloud-free management | Components exist | NOT YET VERIFIED | NOT YET VERIFIED | Missing reviewed admin/event surface |
