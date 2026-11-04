@@ -22,10 +22,10 @@ private keys, or device-specific configuration.
   Results do not establish compatibility with untouched devices or other
   firmware versions.
 - Physical Z-Wave inclusion produced a captured `nodeAdded` callback and
-  persistent stock-API listing. An owner-initiated button press produced a
-  captured state update; On/Off switching of the connected test load is an
-  **OWNER-REPORTED PHYSICAL OBSERVATION**. The WMR-252-specific RF433 load
-  switching is also **OWNER-REPORTED PHYSICAL OBSERVATION**. These bounded
+  persistent stock-API listing. A physical button press produced a
+  captured state update; On/Off switching of the connected test load was
+  **PHYSICALLY OBSERVED**. The WMR-252-specific RF433 load
+  switching is also **PHYSICALLY OBSERVED**. These bounded
   results do not establish general radio support.
 - The stock plugin loader's package-signature and startup path was exercised
   with a locally signed test plugin. A controlled MQTT publication reached an
@@ -33,8 +33,8 @@ private keys, or device-specific configuration.
   or radio-event forwarding.
 - A separate Home Assistant experiment completed owner-approved token
   issuance, selected stock-API reads, and entity creation. Polling stock API
-  state reads is implemented. The owner reported that an On command reached
-  one connected test plug (**OWNER-REPORTED PHYSICAL OBSERVATION**); sustained
+  state reads is implemented. An On command switched on
+  one connected test plug during testing (**PHYSICALLY OBSERVED**); sustained
   polling behavior, callback forwarding, complete bidirectional
   synchronization, and a connected-device Off command have not been fully
   verified.

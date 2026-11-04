@@ -25,7 +25,7 @@ The finding is not simply that the chipset supports Wi-Fi. Wireless connectivity
 | Wireless interface | wlan0 |
 | Wireless band | 2.4 GHz |
 | Tested authentication | WPA2-PSK |
-| Access point | Researcher-controlled network |
+| Access point | Controlled test network |
 
 The observations apply to one examined unit. Other firmware versions and hardware revisions have not been independently verified.
 
@@ -109,7 +109,7 @@ SSID and credential values are intentionally omitted.
 
 ## Functional Verification
 
-Following discovery of the wireless interface, controlled tests were performed against a researcher-operated access point.
+Following discovery of the wireless interface, connectivity was tested using a controlled access point.
 
 ### Access Point Scanning
 
