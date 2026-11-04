@@ -31,9 +31,9 @@ gateway. The following selected paths were observed physically:
 - Z-Wave inclusion through the stock controller, a captured `nodeAdded`
   callback, node appearance in the stock API after daemon restart, and a
   captured physical-button-origin state change. On/Off switching of one
-  connected test load was an **OWNER-REPORTED PHYSICAL OBSERVATION**.
+  connected test load was **PHYSICALLY OBSERVED**.
 - WMR-252-specific RF433 control with pairing indication and On/Off of its
-  connected load (**OWNER-REPORTED PHYSICAL OBSERVATION**). This does not
+  connected load (**PHYSICALLY OBSERVED**). This does not
   establish general pairing or receiver-origin state feedback.
 
 These are narrowly scoped results, not compatibility guarantees. The

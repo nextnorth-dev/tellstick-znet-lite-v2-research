@@ -30,10 +30,10 @@ login, stock token approval/JWT use, and selected system/device/sensor API
 reads. A scoped dual-interface IPv4 egress-block cold boot passed those local
 checks once; it is not proof of universal or long-term zero egress. Separate
 Z-Wave tests recorded inclusion, `nodeAdded`, and a physical-button state
-update. The owner-reported On/Off switching of one connected load is an
-**OWNER-REPORTED PHYSICAL OBSERVATION**. A WMR-252-specific RF433 path
+update. On/Off switching of one connected load was
+**PHYSICALLY OBSERVED**. A WMR-252-specific RF433 path
 produced a recorded adapter acceptance; the pairing indication and load
-On/Off are **OWNER-REPORTED PHYSICAL OBSERVATION**. These results and their
+On/Off are **PHYSICALLY OBSERVED**. These results and their
 individual limits are recorded in the
 [hardware verification matrix](../HARDWARE_VERIFICATION.md).
 

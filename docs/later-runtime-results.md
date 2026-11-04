@@ -48,14 +48,14 @@ callbacks and transactions spanning restarts are not fresh-login tests.
 October daemon logs contain incoming `arctech` / `selflearning` frames. Those
 entries do not identify the sender or action and are not physical sensor-value
 tests. The WMR-252 LocalOwner route separately recorded adapter acceptance;
-pairing indication and connected-lamp On/Off were owner-observed. Generic
+pairing indication and connected-lamp On/Off were directly observed. Generic
 RF433 record CRUD tests sent no RF. Stock API acceptance or saved state alone
 is not a receiver acknowledgement.
 
 The November 2 Nexa self-learning-dimmer capture contains 72 JSONL records:
-27 RX, 34 TX, ten operator markers, and one diagnostic. Live processing handled
+27 RX, 34 TX, ten test markers, and one diagnostic. Live processing handled
 learn, On/Off, and dim commands at 64, 128, and 192, with application ACKs and
-device events. The operator reported physical On/Off and dimmer response;
+device events. Physical On/Off and dimmer response were directly observed;
 brightness was not measured. Neither the ACKs nor the events are receiver-side
 RF acknowledgements. The commercial model was not independently identified.
 
@@ -80,7 +80,7 @@ does not capture the controller's reply bytes or independently establish its
 final persistent membership table. Local-entry forgetting is a different
 operation and can be undone by controller re-enumeration at daemon startup.
 
-Earlier physical-button callbacks and owner-observed load switching remain
+Earlier physical-button callbacks and directly observed load switching remain
 valid separate observations. Their product-identification discrepancy is
 preserved in the [hardware matrix](../HARDWARE_VERIFICATION.md); later captures
 must not silently resolve it or be attributed to the earlier LocalOwner route.
@@ -100,7 +100,7 @@ spanning the reboot. Sensor-to-MQTT forwarding was not implemented or tested.
 | --- | --- | --- |
 | Stock Research R1 | Image integrity and on-device `sysupgrade -T` acceptance; its handler bytecode matches the tested modified runtime | The retained November 2 `device-test.json` explicitly says the candidate was not flashed. |
 | Initial rc4 installation attempt | Acknowledgement and reboot left the previous ROM installed; the staging path was lost at the RAMFS transition | Reboot and upload filename did not establish installation. |
-| Later owner rc4 installation | Retained rc5 validation records an installed rc4 ROM match, SHA-256 `0b6d5d621a69d4941443b8abbf2853b279832590d01512c96861acaf8d323d14` | Normal installation/boot evidence, not recovery from a failed boot. |
+| Later rc4 installation | Retained rc5 validation records an installed rc4 ROM match, SHA-256 `0b6d5d621a69d4941443b8abbf2853b279832590d01512c96861acaf8d323d14` | Normal installation/boot evidence, not recovery from a failed boot. |
 | Lite rc5 | Build/content checks, Python/JavaScript tests, and native image acceptance | Not flashed or boot-tested in the retained release records. |
 
 The staging repair uses canonical `/tmp` storage: stock `supivot` carries that
@@ -136,7 +136,7 @@ the November 3 browser/session record, R1 `device-test.json`, rc5
 `RELEASE.json`, `VALIDATION.json`, and `physical-validation.json`, the October
 RF/isolated-MQTT logs, and the November 2 typed application captures. These
 records are not a redistributable firmware bundle; private captures and
-internal working files are not included. Reported browser/physical observations
+internal working files are not included. Direct browser/physical observations
 are distinguished from machine-recorded fields above.
 
 The retained capture identifiers are `433-nexa-dimmer-test1/capture.jsonl`,

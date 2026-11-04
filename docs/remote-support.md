@@ -6,7 +6,7 @@
 
 Firmware 1.3.2 includes a Python remote-support component and an RSA private
 key in its filesystem. Its code implements outbound SSH reverse forwarding.
-An earlier narrative reports reproduction against a researcher-controlled
+An earlier narrative reports reproduction against a controlled test
 endpoint, but a sufficient primary transcript was not located. That runtime
 claim remains unresolved; no local SSH authentication bypass is established.
 
@@ -23,7 +23,7 @@ claim remains unresolved; no local SSH authentication bypass is established.
 | Authentication material | RSA private key in PEM format |
 | Transport | SSH |
 | Remote access mechanism | Reverse TCP port forwarding |
-| Reported controlled-test endpoint | Researcher-controlled SSH server; primary transcript not located |
+| Reported controlled-test endpoint | Controlled test SSH server; primary transcript not located |
 
 The investigation was performed on personally owned hardware and a locally extracted firmware filesystem.
 
@@ -174,7 +174,7 @@ These authentication boundaries are important when assessing the security impact
 
 ## Controlled verification: evidence gap
 
-An earlier account describes a researcher-controlled reverse-forwarding
+An earlier account describes a controlled test reverse-forwarding
 experiment. Its primary connection/forwarding transcript was not located,
 while the static security review explicitly leaves a live support tunnel
 unverified. The narrative alone is insufficient to classify reproduction as
